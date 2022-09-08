@@ -19,5 +19,5 @@ galaxy_info:
     - mvie
 
 dependencies:
-  - role: emk.ansible_devops.ansible_version_check
+  - role: ibmce.ocp_ansible.ansible_version_check
 
