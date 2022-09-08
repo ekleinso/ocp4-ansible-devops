@@ -11,5 +11,5 @@
     update_status: "{{ reg_storagecluster | json_query(status_query) }}"
   until:
     - update_status == ['Ready']
-  retries: {{ odf_retries }} # wait for 10 minutes (10 retries x 60 sec = 600 sec)
-  delay: {{ odf_delay }}
+  retries: "{{ odf_retries }}" # wait for 10 minutes (10 retries x 60 sec = 600 sec)
+  delay: "{{ odf_delay }}"
