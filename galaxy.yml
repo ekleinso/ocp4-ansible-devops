@@ -1,5 +1,5 @@
-namespace: emk
-name: ansible_devops
+namespace: ibmce
+name: ocp_ansible
 version: 1.0.0
 readme: README.md
 authors:
@@ -8,7 +8,7 @@ description: DevOps Ansible Collection
 license:
   - EPL-2.0
 tags:
-  - ibm
+  - ibmce
   - mvie
   - rhocp
 dependencies:

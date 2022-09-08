@@ -12,9 +12,9 @@ galaxy_info:
         - all
 
   galaxy_tags:
-    - emk
+    - ibmce
     - ansible
-    - devops
+    - ocp
 
 dependencies: []
 
