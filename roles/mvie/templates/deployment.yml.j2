@@ -1,0 +1,184 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: "{{ mvie_namespace }}"
+  name: mvie-app-server
+  namespace: "{{ mvie_namespace }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ mvie_namespace }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ mvie_namespace }}"
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nvidia.com/gpu.present
+                operator: In
+                values:
+                - "true"
+      containers:
+      - env:
+        - name: CONFIG_FOLDER
+          value: /opt/ibm/vision-edge/var/config
+        - name: LOG_LEVEL
+          value: INFO
+        image: cp.icr.io/cp/visualinspection/vision-edge-cme:8.6.0
+        name: vision-edge-cme-container
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 15000Mi
+          requests:
+            cpu: 2000m
+            memory: 15000Mi
+        volumeMounts:
+        - mountPath: /host
+          name: vision-edge
+          subPath: vision-edge
+        - mountPath: /opt/ibm/vision-edge/var
+          name: vision-edge
+          subPath: vision-edge/volume/run/var
+        - mountPath: /opt/ibm/vision-edge/images
+          name: vision-edge
+          subPath: vision-edge/volume/run/images
+        - mountPath: /opt/ibm/vision-edge/usrimages
+          name: vision-edge
+          subPath: vision-edge/volume/data/images
+      - env:
+        - name: HOSTALIASES
+          value: /host/etc.host
+        - name: SHMEM_SIZE
+          value: "12500"
+        image: cp.icr.io/cp/visualinspection/vision-edge-controller:8.6.0
+        name: vision-edge-controller-container
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        - containerPort: 443
+          protocol: TCP
+        - containerPort: 8883
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 15000Mi
+          requests:
+            cpu: 2000m
+            memory: 15000Mi
+        volumeMounts:
+        - mountPath: /host
+          name: vision-edge
+          subPath: vision-edge
+        - mountPath: /opt/ibm/vision-edge/psdata
+          name: vision-edge
+          subPath: vision-edge/volume/run/psdata
+        - mountPath: /opt/ibm/vision-edge/pstbspc
+          name: vision-edge
+          subPath: vision-edge/volume/run/pstbspc
+        - mountPath: /opt/ibm/vision-edge/pgbackrest
+          name: vision-edge
+          subPath: vision-edge/volume/run/pgbackrest
+        - mountPath: /opt/ibm/vision-edge/var
+          name: vision-edge
+          subPath: vision-edge/volume/run/var
+        - mountPath: /opt/ibm/vision-edge/images
+          name: vision-edge
+          subPath: vision-edge/volume/run/images
+        - mountPath: /opt/ibm/vision-edge/usrimages
+          name: vision-edge
+          subPath: vision-edge/volume/data/images
+        - mountPath: /opt/ibm/vision-edge/downloaded_models
+          name: vision-edge
+          subPath: vision-edge/volume/run/downloaded_models
+        - mountPath: /opt/ibm/vision-edge/deployed_models
+          name: vision-edge
+          subPath: vision-edge/volume/run/deployed_models
+      - env:
+        - name: CONFIG_FOLDER
+          value: /opt/ibm/vision-edge/var/config
+        - name: LOG_LEVEL
+          value: INFO
+        - name: DLE_PORT
+          value: "9001"
+        - name: DLE_USE_SSL
+          value: "true"
+        - name: DLE_SSL_CERT
+          value: /opt/ibm/vision-edge/config/.ssl/visionedge.crt
+        - name: DLE_SSL_KEY
+          value: /opt/ibm/vision-edge/config/.ssl/visionedge.key
+        - name: DLE_ENABLE_GPU_MEMORY_CHECK
+          value: "FALSE"
+        - name: DLE_ENABLE_CPU_FALLBACK
+          value: "TRUE"
+        - name: GIN_MODE
+          value: release
+        image: cp.icr.io/cp/visualinspection/vision-edge-dle:8.6.0
+        name: vision-edge-dle-container
+        ports:
+        - containerPort: 9001
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 15000Mi
+          requests:
+            cpu: 2000m
+            memory: 15000Mi
+        volumeMounts:
+        - mountPath: /host
+          name: vision-edge
+          subPath: vision-edge
+        - mountPath: /opt/ibm/vision-edge/downloaded_models
+          name: vision-edge
+          subPath: vision-edge/volume/run/downloaded_models
+        - mountPath: /opt/ibm/vision-edge/deployed_models
+          name: vision-edge
+          subPath: vision-edge/volume/run/deployed_models
+        - mountPath: /opt/ibm/vision-edge/config/.ssl
+          name: vision-edge
+          subPath: vision-edge/volume/run/var/config/.ssl
+      hostAliases:
+      - hostnames:
+        - vision-edge-controller
+        ip: 127.0.0.1
+      - hostnames:
+        - vision-edge-cme
+        ip: 127.0.0.1
+      - hostnames:
+        - vision-edge-dle
+        ip: 127.0.0.1
+      initContainers:
+      - env:
+        - name: SERVICE_NAME
+          value: mvie-service.mvi-edge-server.svc.cluster.local
+        - name: MY_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        image: icr.io/mvi-edge-server/edge-sidecar:0.0
+        name: sidecar
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1000Mi
+          requests:
+            cpu: 1000m
+            memory: 1000Mi
+        volumeMounts:
+        - mountPath: /vision-edge
+          name: vision-edge
+      restartPolicy: Always
+      serviceAccount: mvie-anyuid
+      serviceAccountName: mvie-anyuid
+      volumes:
+      - name: vision-edge
+        persistentVolumeClaim:
+          claimName: mvie-pvc

@@ -1,0 +1,21 @@
+namespace: emk
+name: ansible_devops
+version: 1.0.0
+readme: README.md
+authors:
+  - Eric Kleinsorgen <emk@us.ibm.com>
+description: DevOps Ansible Collection
+license:
+  - EPL-2.0
+tags:
+  - ibm
+  - mvie
+  - rhocp
+dependencies:
+  "kubernetes.core": ">=2.2.0,<3.0.0"
+repository: https://github.com/ekleinso/ansible-devops
+documentation: https://github.com/ekleinso/ansible-devops
+homepage: https://github.com/ekleinso/ansible-devops
+issues: https://github.com/ekleinso/ansible-devops/issues
+build_ignore: []
+

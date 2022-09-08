@@ -1,0 +1,58 @@
+---
+- name: Create project
+  kubernetes.core.k8s:
+    state: present
+    template: 'templates/namespace.yml.j2'
+
+- name: Create ServiceAccount
+  kubernetes.core.k8s:
+    state: present
+    template: 'templates/serviceaccount.yml.j2'
+
+- name: Create Role
+  kubernetes.core.k8s:
+    state: present
+    template: 'templates/role.yml.j2'
+
+- name: Create RoleBinding
+  kubernetes.core.k8s:
+    state: present
+    template: 'templates/rolebinding.yml.j2'
+
+- name: Create ImagePullSecrets
+  vars:
+    entitledAuthStr: "{{ ibm_entitlement_username }}:{{ ibm_entitlement_key }}"
+    entitledAuth: "{{ entitledAuthStr | b64encode }}"
+    icrAuthStr: "{{ icr_entitlement_username }}:{{ icr_entitlement_key }}"
+    icrAuth: "{{ icrAuthStr | b64encode }}"
+    entitledContent:
+      - '{"auths":{"cp.icr.io": {"username":"{{ ibm_entitlement_username }}","password":"{{ ibm_entitlement_key }}","auth":"{{ entitledAuth }}"}'
+      - '}'
+      - '}'
+    icrContent:
+      - '{"auths":{"icr.io": {"username":"{{ icr_entitlement_username }}","password":"{{ icr_entitlement_key }}","auth":"{{ icrAuth }}"}'
+      - '}'
+      - '}'
+  kubernetes.core.k8s:
+    state: present
+    template: 'templates/secrets.yml.j2'
+
+- name: Create Service
+  kubernetes.core.k8s:
+    state: present
+    template: 'templates/service.yml.j2'
+
+- name: Create Route
+  kubernetes.core.k8s:
+    state: present
+    template: 'templates/route.yml.j2'
+
+- name: Create PersistentVolumeClaim
+  kubernetes.core.k8s:
+    state: present
+    template: 'templates/storage.yml.j2'
+
+- name: Create MVI Edge Server Deployment
+  kubernetes.core.k8s:
+    state: present
+    template: 'templates/deployment.yml.j2'

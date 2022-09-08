@@ -1,0 +1,6 @@
+---
+# ------ Parameters -----------------------------------------------------------------------------------------------
+
+odf_retries: "{{ lookup('env', 'ODF_RETRIES') | default('10', true) }}"
+odf_delay: "{{ lookup('env', 'ODF_DELAY') | default('60', true) }}"
+

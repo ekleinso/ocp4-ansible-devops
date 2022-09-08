@@ -1,0 +1,15 @@
+---
+# ------ MVIE storage classes ------------------------------------------------------------------------------------------
+mvie_storage_class: "{{ lookup('env', 'MVIE_STORAGE_CLASS') }}"
+
+# ------ IBM entitlement ----------------------------------------------------------------------------------------------
+ibm_entitlement_username: "{{ lookup('env', 'IBM_ENTITLEMENT_USERNAME') | default('cp', true) }}"
+ibm_entitlement_key: "{{ lookup('env', 'IBM_ENTITLEMENT_KEY') }}"
+
+icr_entitlement_username: "{{ lookup('env', 'ICR_ENTITLEMENT_USERNAME') | default('iamapikey', true) }}"
+icr_entitlement_key: "{{ lookup('env', 'ICR_ENTITLEMENT_KEY') }}"
+
+# ------ MVIE parameters -----------------------------------------------------------------------------------------------
+
+mvie_namespace: "{{ lookup('env', 'MVIE_NAMESPACE') | default('mvi-edge-server', true) }}"
+

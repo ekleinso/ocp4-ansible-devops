@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: "{{ mvie_namespace }}"
+  name: mvie-pvc
+  namespace: "{{ mvie_namespace }}"
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: "{{ mvie_storage_class }}"
