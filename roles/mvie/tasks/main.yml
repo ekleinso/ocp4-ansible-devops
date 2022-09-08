@@ -19,23 +19,51 @@
     state: present
     template: 'templates/rolebinding.yml.j2'
 
-- name: Create ImagePullSecrets
+- name: Create ImagePullSecrets cp.icr.io
   vars:
     entitledAuthStr: "{{ ibm_entitlement_username }}:{{ ibm_entitlement_key }}"
     entitledAuth: "{{ entitledAuthStr | b64encode }}"
-    icrAuthStr: "{{ icr_entitlement_username }}:{{ icr_entitlement_key }}"
-    icrAuth: "{{ icrAuthStr | b64encode }}"
     entitledContent:
       - '{"auths":{"cp.icr.io": {"username":"{{ ibm_entitlement_username }}","password":"{{ ibm_entitlement_key }}","auth":"{{ entitledAuth }}"}'
       - '}'
       - '}'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: kubernetes.io/dockerconfigjson
+      metadata:
+        labels:
+          app: "{{ mvie_namespace }}"
+        name: "cpicrio"
+        namespace: "{{ mvie_namespace }}"
+      stringData:
+        # Only way I could get three consecutive "}" into a string :)
+        .dockerconfigjson: "{{ entitledContent | join('') | string }}"
+    state: present
+
+- name: Create ImagePullSecrets icr.io
+  vars:
+    icrAuthStr: "{{ icr_entitlement_username }}:{{ icr_entitlement_key }}"
+    icrAuth: "{{ icrAuthStr | b64encode }}"
     icrContent:
       - '{"auths":{"icr.io": {"username":"{{ icr_entitlement_username }}","password":"{{ icr_entitlement_key }}","auth":"{{ icrAuth }}"}'
       - '}'
       - '}'
   kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: kubernetes.io/dockerconfigjson
+      metadata:
+        labels:
+          app: "{{ mvie_namespace }}"
+        name: "mvi-edge-us"
+        namespace: "{{ mvie_namespace }}"
+      stringData:
+        # Only way I could get three consecutive "}" into a string :)
+        .dockerconfigjson: "{{ icrContent | join('') | string }}"
     state: present
-    template: 'templates/secrets.yml.j2'
 
 - name: Create Service
   kubernetes.core.k8s:
