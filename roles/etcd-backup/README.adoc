@@ -1,0 +1,155 @@
+== etcd-backup
+This role creates a cron job which peforms the following
+
+NOTE: Starting with OCP 4.4 there is a etcd operator. I believe the end goal is
+      to get the backups performed via the etcd operators. A lot has changed.
+      Once the etcd operator takes over the backups we can depricate this role.
+
+link:https://github.com/openshift/cluster-etcd-operator[OpenShift Cluster etcd Operator]
+
+I have made changes to the master branch which will break this role for older
+version for OCP. Please refer to the older versions that are availabe in
+other branches.
+
+- creates a snapshot of the etcd database
+- saves the snapshot to an pvc volume
+
+IMPORTANT: The files folder has several versions of the backup script. one for
+           each OpenShift version. When OCP 4.6 becomes available we will may
+           need to create a version of backup_script-4.6.sh which is compatible
+           with openshfit 4.6
+
+```bash
+[sushil@rhltop etcd-backup]$ tree files/
+files/
+├── backup_script-4.2.sh
+├── backup_script-4.3.sh
+├── backup_script-4.4.sh
+├── backup_script-4.5.sh
+```
+
+The cron job creates a new pod with the exact same image as the etcd pods
+The reson why we are using the same image as the etcd pods is to make sure
+that the image has the etcdctl command backed into the image.
+
+The cron job pods use a node selector to make sure that they are scheduled to
+the master nodes. We do so that we can map a couple of paths for the master
+nodes to the cron job pod.
+
+The following host paths on the master are mapped
+
+* /etc/kubernetes/static-pod-resources/etcd-member
+* /etc/etcd
+* /etc/kubernetes
+* /usr/local/bin
+
+The `/etc/` folders makes available the kubernetes config folder and the etcd
+config folder and etcd certificates. The path `/usr/local/bin` is mounted so
+that we have access to the backup script etcd-snapshot-backup.sh within the
+cron job pod.
+
+The default backup script `/usr/local/bin/etcd-snapshot-backup.sh` calls a
+function *dl_etcdctl* which run podsman with the etcd image and copies the
+etcdctl binary. We do not have to do that as this cron job is runing the etcd
+image and the etcdctl binary is already baked into the image.
+
+The below have been added to make this cron job work without having to try and
+source a etcdctl binary to perform the backups. For legacy reasons the script
+is named as etcd-snapshot-backup-disconnected.sh (could be named better now)
+
+A ConfigMap is created to attach/mount 2 bash scrips
+
+- etcd-backup.sh
+- etcd-snapshot-backup-disconnected.sh
+
+The cron job will invoke the first bash scritpt -
+`/usr/local/bin/etcd-backup.sh`
+
+The disconnected backup script is identical to the original script that is
+shipped with OCP except for the follwing changes
+The only changes are
+
+- the function to download etcdctl was removed
+
+The **NEW** script that is shipped with OCP 4.4 is called
+link:https://github.com/openshift/cluster-etcd-operator/blob/master/bindata/etcd/cluster-backup.sh[cluster-backup.sh]
+
+See diff below
+```
+[root@helper bin]# diff cluster-backup.sh etcd-snapshot-backup-disconnected.sh
+67c67,68
+< dl_etcdctl
+---
+> # Commenting this out as we are running this script via a cron job.
+> # dl_etcdctl
+```
+
+=== Requirements
+The role assumes that your cluster has a working default storageclass. A PVC
+claim is made to store the etcd snapshots in a persistent manner. So having a
+fully function default sotrage class is a prerequisite.
+
+=== Role Variables
+Default role variables that are defined.
+
+```
+etcd_cluster_id: "demo"
+etcd_backup_volume_size: "10Gi"
+etcd_backup_namespace: "openshift-cluster-ops"
+etcd_backup_username: "etcd-backup-user"
+```
+You would want to atleast override the `etcd_cluster_id` and the
+`etcd_backup_volume_size` variables when invoking the role.
+
+=== Dependencies
+This ansible role requires that you are have an authenticated kubectl session
+which has sufficient previlegges to create namespaces, and create cronjobs
+as well as create a service account with escalated privilleges.
+
+
+=== Assumptions
+An assumption is made that the end user has a backup policy in place to backup
+the pvc volume where the etcd snapshots are saved. This role was first written
+for a OCP 4.2 UPI cluster on VSphere. The customer had regular daily snapshots
+for the vmdks that where taken and stored external to the cluster.
+
+=== Example Usage
+Example invocation of the role in a playbook
+
+[source,yaml]
+----
+- hosts: localhost
+  tasks:
+    - include_role:
+        name: etcd-backup
+----
+
+OR if you want to override some default variables
+
+[source,yaml]
+----
+- hosts: localhost
+  tasks:
+    - include_role:
+        name: etcd-backup
+      vars:
+        etcd_cluster_id: "prod"
+        etcd_backup_volume_size: "100Gi"
+----
+
+If you would like to use the role without including it or writing a playbook,
+from the root of this github repo you can run the following.
+
+[source,bash]
+----
+ansible-playbook roles/etcd-backup/apply/main.yml \
+                 -e etcd_cluster_id=prod \
+                 -e etcd_backup_volume_size=100Gi
+----
+
+IMPORTANT: The default schedule for the cron job is every 5 minutes. I believe
+that this is excessive. However keeping it short was handy for troubleshooting.
+
+TODO:
+
+  - Make the cron schedule a vairable so that it can be customised.

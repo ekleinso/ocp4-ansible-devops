@@ -1,0 +1,35 @@
+---
+# tasks file for etcd-backup
+
+- name: Create Namespace
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'namespace.yaml.j2') }}"
+
+- include_tasks: serviceaccount.yml
+
+- include_tasks: create-pvc.yml
+
+- include_tasks: get_etcd_image.yml
+
+- include_tasks: fetch_ocp_version.yml
+
+# NOTE: Eg for OpenShift 4.5.2 We look for backup_script-4.5.2.sh first
+#       if missing, we will look for backup_script-4.5.sh next.
+#       When OpenShift 4.6 comes out we will need to have a new backup_script
+#       added for 4.6. Also if in future OpenShift 4.5.10 come up with a
+#       breaking change we can added backup_script-4.5.10.sh to overcome.
+- include_tasks: configmap.yml
+  vars:
+    backup_scripts:
+      - "backup_script-{{ ocp_version }}.sh"
+      - "backup_script-{{ ocp_major_version }}.sh"
+      - "backup_script-4.5.sh"
+      # The backup script hasn't changed between OCP 4.5 and OCP 4.6
+      # So defaulting to the 4.5 version of the script.
+    etcd_backup_script: "{{ lookup('first_found', backup_scripts) }}"
+
+- name: Create CronJob
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'cronjob.yaml.j2') }}"
