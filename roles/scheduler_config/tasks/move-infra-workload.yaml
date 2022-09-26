@@ -31,5 +31,5 @@
         path: /spec
         value: "{{ ingress_patch | join('') }}"
   when:
-    - ocp_infra_nodes is iterable
+    - ocp_infra_nodes.resources
     - reg_ocp_ingresscontroller.resources[0].spec.nodePlacement.nodeSelector.matchLabels["node-role.kubernetes.io/infra"] is not defined
