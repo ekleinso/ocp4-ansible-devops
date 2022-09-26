@@ -3,7 +3,7 @@
   k8s_info:
     kind: Node
     label_selectors:
-      - "node-role.kubernetes.io/infra = ''"
+      - "node-role.kubernetes.io/infra"
   register: ocp_infra_nodes
 
 - name: Search for defaul Ingress Controller
