@@ -1,4 +1,11 @@
 # Move the default Ingress Controller to the infra nodes
+- name: Gather all the Nodes
+  k8s_info:
+    kind: Node
+    label_selectors:
+      - "node-role.kubernetes.io/infra = ''"
+  register: ocp_infra_nodes
+
 - name: Search for defaul Ingress Controller
   k8s_info:
     kind: IngressController
@@ -18,3 +25,4 @@
         value: '{"nodePlacement":{"nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":""}}}}'
   when:
     - reg_ocp_ingresscontroller.resources[0].spec.nodePlacement.nodeSelector.matchLabels["node-role.kubernetes.io/infra"] is not defined
+    - ocp_infra_nodes is defined
