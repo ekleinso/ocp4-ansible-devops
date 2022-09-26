@@ -10,7 +10,7 @@
         labels:
           workload: "generic"
   when:
-    - item.metadata.name | search("worker")
+    - item.metadata.name is search("worker")
     - item["metadata"]["labels"]["workload"] is not defined
   loop_control:
     label: "{{ item.metadata.name }}"
