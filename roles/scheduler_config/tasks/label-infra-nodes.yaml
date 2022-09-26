@@ -32,7 +32,7 @@
       metadata:
         name: "{{ item.metadata.name }}"
         labels: 
-          node-role.kubernetes.io/worker-
+          node-role.kubernetes.io/worker: NULL
   when:
     - item.metadata.name | search("infra")
     - item["metadata"]["labels"]["node-role.kubernetes.io/worker"] is defined
