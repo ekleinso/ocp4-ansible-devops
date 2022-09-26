@@ -39,9 +39,7 @@
     image_registry_storage:
     - '{"pvc":{"claim":"{{ image_registry_pvc }}"}'
     - '}'
-    image_registry_emptydir: '{"emptyDir":{}}'
-    - '{"pvc":{"claim":"{{ image_registry_pvc }}"}'
-    - '}'
+
 # Configure PVC storage provided the variable image_registry_emptydir variable
 # is false.
 - name: Configure PVC storage for Image Registry

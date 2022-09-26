@@ -13,6 +13,13 @@
     namespace: openshift-ingress-operator
   register: reg_ocp_ingresscontroller
 
+- set_fact:
+    ingress_patch:
+    - '{"nodePlacement":{"nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":""}'
+    - '}'
+    - '}'
+    - '}'
+
 - name: Move the Ingress Controller to the Infra Nodes
   kubernetes.core.k8s_json_patch:
     api_version: operator.openshift.io/v1
@@ -22,7 +29,7 @@
     patch:
       - op: add
         path: /spec
-        value: '{"nodePlacement":{"nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":""}}}}'
+        value: "{{ ingress_patch | join('') }}"
   when:
     - ocp_infra_nodes
     - reg_ocp_ingresscontroller.resources[0].spec.nodePlacement.nodeSelector.matchLabels["node-role.kubernetes.io/infra"] is not defined
