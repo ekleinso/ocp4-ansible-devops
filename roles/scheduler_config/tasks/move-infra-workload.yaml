@@ -23,4 +23,6 @@
       - op: add
         path: /spec
         value: '{"nodePlacement":{"nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":""}}}}'
-  when: (ocp_infra_nodes is defined) and (reg_ocp_ingresscontroller.resources[0].spec.nodePlacement.nodeSelector.matchLabels["node-role.kubernetes.io/infra"] is not defined)
+  when:
+    - ocp_infra_nodes | length > 0
+    - reg_ocp_ingresscontroller.resources[0].spec.nodePlacement.nodeSelector.matchLabels["node-role.kubernetes.io/infra"] is not defined
