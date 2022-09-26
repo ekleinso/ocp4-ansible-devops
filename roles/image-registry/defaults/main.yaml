@@ -1,3 +1,5 @@
 ---
-image_registry_size: 100Gi
-image_regitry_emptydir: false
+image_registry_size: "{{ lookup('env', 'IMAGE_REGISTRY_SIZE') | default('100Gi', true) }}"
+image_registry_emptydir: "{{ lookup('env', 'IMAGE_REGISTRY_EMPTYDIR') | default('false', true) }}"
+image_registry_pvc: "{{ lookup('env', 'IMAGE_REGISTRY_PVC') | default('image-registry-storage', true) }}"
+default_storageclass: "{{ lookup('env', 'DEFAULT_STORAGECLASS') | default('sat-ocs-cephfs-gold', true) }}"

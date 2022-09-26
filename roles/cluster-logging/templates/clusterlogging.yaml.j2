@@ -8,8 +8,10 @@ spec:
   logStore:
     type: "elasticsearch"
     elasticsearch:
+      {% if use_infra_node %}
       nodeSelector:
         node-role.kubernetes.io/infra: ""
+      {% endif %}
       nodeCount: {{ clo_elastic_nodeCount }}
       resources:
         limits:
@@ -23,8 +25,10 @@ spec:
   visualization:
     type: "kibana"
     kibana:
+      {% if use_infra_node %}
       nodeSelector:
         node-role.kubernetes.io/infra: ""
+      {% endif %}
       resources:
         limits:
           memory: 1Gi
@@ -35,8 +39,10 @@ spec:
   curation:
     type: "curator"
     curator:
+      {% if use_infra_node %}
       nodeSelector:
         node-role.kubernetes.io/infra: ""
+      {% endif %}
       resources:
         limits:
           memory: 200Mi

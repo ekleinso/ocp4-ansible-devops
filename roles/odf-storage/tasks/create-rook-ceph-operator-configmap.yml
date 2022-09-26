@@ -19,6 +19,6 @@
 #
 ###############################################################################
 - name: Create ConfigMap for rook ceph operator config
-  command: oc apply -f {{ role_path }}/files/rook-ceph-operator-config.yaml
-  register: reg_rook_ceph_operator_cm
-  changed_when: reg_rook_ceph_operator_cm is not search(' unchanged')
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('file', '/files/rook-ceph-operator-config.yaml') | from_yaml }}"

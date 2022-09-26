@@ -8,7 +8,7 @@ machineconfigpools:
   - worker
 
 
-ntp_servers: []
+ntp_servers: "{{ lookup('env', 'NTP_SERVERS').split(',') | default([], true) }}"
 
-ntp_pools: []
+ntp_pools: "{{ lookup('env', 'NTP_POOLS').split(',') | default([], true) }}"
 

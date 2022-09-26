@@ -3,41 +3,47 @@
 
 # The steps here try to mirror the steps described in the documenation page
 # https://docs.openshift.com/container-platform/4.3/logging/cluster-logging-deploying.html
-
+- name: Gather infra Nodes
+  k8s_info:
+    kind: Node
+    label_selectors:
+      - node-role.kubernetes.io/infra is defined
+  register: infra_nodes
+  
 - name: Create openshift-operators-redhat Namespace
-  command: oc apply -f {{ role_path }}/files/eo-namespace.yaml
-  register: reg_eo_namespace
-  changed_when: reg_eo_namespace is not search(' unchanged')
+  k8s:
+    state: present
+    definition: "{{ lookup('file', '/files/eo-namespace.yaml') | from_yaml }}"
 
 - name: Create openshift-logging Namespace
-  command: oc apply -f {{ role_path }}/files/clo-namespace.yaml
-  register: reg_clo_namespace
-  changed_when: reg_clo_namespace is not search(' unchanged')
+  k8s:
+    state: present
+    definition: "{{ lookup('file', '/files/clo-namespace.yaml') | from_yaml }}"
 
 - name: Create OperatorGroup openshift-operators-redhat
-  command: oc apply -f {{ role_path }}/files/eo-og.yaml
-  register: reg_eo_og
-  changed_when: reg_eo_og is not search(' unchanged')
+  k8s:
+    state: present
+    definition: "{{ lookup('file', '/files/eo-og.yaml') | from_yaml }}"
 
 - name: Create OperatorGroup openshift-logging
-  command: oc apply -f {{ role_path }}/files/clo-og.yaml
-  register: reg_clo_og
-  changed_when: reg_clo_og is not search(' unchanged')
+  k8s:
+    state: present
+    definition: "{{ lookup('file', '/files/clo-og.yaml') | from_yaml }}"
 
 - name: Create Subscription for elasticsearch-operator
-  command: oc apply -f {{ role_path }}/files/eo-sub.yaml
-  register: reg_eo_sub
-  changed_when: reg_eo_sub is not search(' unchanged')
+  k8s:
+    state: present
+    definition: "{{ lookup('file', '/files/eo-sub.yaml') | from_yaml }}"
 
 - name: Create necessary RBAC objects
-  command: oc apply -f {{ role_path }}/files/eo-rbac.yaml
-  register: reg_eo_rbac
-  changed_when: reg_eo_rbac is not search(' unchanged')
+  k8s:
+    state: present
+    definition: "{{ lookup('file', '/files/eo-rbac.yaml') | from_yaml }}"
 
 - name: Create Subscription for clusterlogging-operator
-  command: oc apply -f {{ role_path }}/files/clo-sub.yaml
-  register: reg_clo_sub
-  changed_when: reg_clo_sub is not search(' unchanged')
+  k8s:
+    state: present
+    definition: "{{ lookup('file', '/files/clo-sub.yaml') | from_yaml }}"
 
 - name: Wait for clusterlogging-operator subscription to be installed
   k8s_info:
@@ -57,6 +63,8 @@
   #       Succeeded. Consider just checking the operator that we need installed
 
 - name: Create ClusterLogging instance
+  vars:
+    use_infra_node: "{{ true if (infra_nodes|length > 0) else false }}"
   k8s:
     state: present
     definition: "{{ lookup('template', 'clusterlogging.yaml.j2') }}"
