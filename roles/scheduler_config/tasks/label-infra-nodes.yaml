@@ -14,7 +14,7 @@
         - effect: "PreferNoSchedule"
           key: "node-role.kubernetes.io/infra"
   when:
-    - item.metadata.name | search("infra")
+    - item.metadata.name is search("infra")
     - item["metadata"]["labels"]["node-role.kubernetes.io/infra"] is not defined or
       item["metadata"]["labels"]["workload"] is not defined or
       item["spec"]["taints"] is not defined
@@ -34,7 +34,7 @@
         labels: 
           node-role.kubernetes.io/worker: NULL
   when:
-    - item.metadata.name | search("infra")
+    - item.metadata.name is search("infra")
     - item["metadata"]["labels"]["node-role.kubernetes.io/worker"] is defined
   loop_control:
     label: "{{ item.metadata.name }}"
