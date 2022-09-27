@@ -40,7 +40,7 @@
     - '{"pvc":{"claim":"{{ image_registry_pvc }}"}'
     - '}'
     image_registry_route:
-    - '{"defaultRoute":true}'
+    - '{"defaultRoute":"true"}'
     image_registry_nodeselector:
     - '{"nodeSelector":{"node-role.kubernetes.io/infra": ""}'
     - '}'
