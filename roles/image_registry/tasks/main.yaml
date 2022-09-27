@@ -39,9 +39,6 @@
     image_registry_storage:
     - '{"pvc":{"claim":"{{ image_registry_pvc }}"}'
     - '}'
-    image_registry_nodeselector:
-    - '{"nodeSelector":{"node-role.kubernetes.io/infra": ""}'
-    - '}'
 
 # Configure PVC storage provided the variable image_registry_emptydir variable
 # is false.
@@ -110,8 +107,8 @@
     name: cluster
     patch:
       - op: add
-        path: /spec
-        value: "{{ image_registry_nodeselector | join('') }}"
+        path: /spec/nodeSelector
+        value: '{"node-role.kubernetes.io/infra": ""}'
   when:
     - image_registry_use_infra 
 
