@@ -101,7 +101,7 @@
     patch:
       - op: add
         path: /spec
-        value: "{{ image_registry_route }}"
+        value: "{{ image_registry_route | join('') }}"
   when:
     - reg_imagecfg['resources'][0]['spec']['defaultRoute'] is not defined
 
