@@ -22,7 +22,9 @@ data:
       {% endif %}
       volumeClaimTemplate:
         spec:
+          {% if prometheus_storage_class is defined %}
           storageClassName: {{ prometheus_storage_class }}
+          {% endif %}
           resources:
             requests:
               storage: {{ prometheus_storage_size }}
@@ -34,7 +36,9 @@ data:
       {% endif %}
       volumeClaimTemplate:
         spec:
+          {% if alertmanager_storage_class is defined %}
           storageClassName: {{ alertmanager_storage_class }}
+          {% endif %}
           resources:
             requests:
               storage: {{ alertmanager_storage_size }}
