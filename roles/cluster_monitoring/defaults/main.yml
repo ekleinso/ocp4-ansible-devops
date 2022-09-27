@@ -11,10 +11,10 @@
 # storage would be required
 # https://docs.openshift.com/container-platform/4.2/scalability_and_performance/scaling-cluster-monitoring-operator.html#scaling-cluster-monitoring-operator
 
-prometheus_storage_size: "{{ lookup('env', 'PROMETHEUS_STORAGE_SIZE') | default("100Gi", true) }}"
-prometheus_retention_period: "{{ lookup('env', 'PROMETHEUS_RETENTION_PERIOD') | default("7d", true) }}"
-prometheus_storage_class: "{{ lookup('env', 'PROMETHEUS_STORAGE_CLASS') | default("", true) }}"
-alertmanager_storage_size: "{{ lookup('env', 'ALERTMANAGER_STORAGE_SIZE') | default("40Gi", true) }}"
-alertmanager_storage_class: "{{ lookup('env', 'ALERTMANAGER_STORAGE_CLASS') | default("", true) }}"
+prometheus_storage_size: "{{ lookup('env', 'PROMETHEUS_STORAGE_SIZE') | default('100Gi', true) }}"
+prometheus_retention_period: "{{ lookup('env', 'PROMETHEUS_RETENTION_PERIOD') | default('7d', true) }}"
+prometheus_storage_class: "{{ lookup('env', 'PROMETHEUS_STORAGE_CLASS') | default('', true) }}"
+alertmanager_storage_size: "{{ lookup('env', 'ALERTMANAGER_STORAGE_SIZE') | default('40Gi', true) }}"
+alertmanager_storage_class: "{{ lookup('env', 'ALERTMANAGER_STORAGE_CLASS') | default('', true) }}"
 
-monitoring_use_infra: "{{ lookup('env', 'MONITORING_USE_INFRA') | default("false", true) }}"
+monitoring_use_infra: "{{ lookup('env', 'MONITORING_USE_INFRA') | default('false', true) }}"
