@@ -5,63 +5,65 @@ metadata:
   namespace: openshift-monitoring
 data:
   config.yaml: |
-    prometheusOperator:
-      baseImage: quay.io/coreos/prometheus-operator
-      prometheusConfigReloaderBaseImage: quay.io/coreos/prometheus-config-reloader
-      configReloaderBaseImage: quay.io/coreos/configmap-reload
-      {% if monitoring_use_infra %}
-      nodeSelector:
-        node-role.kubernetes.io/infra: ""
-      {% endif %}
     prometheusK8s:
       retention: {{ prometheus_retention_period }}
-      baseImage: openshift/prometheus
-      {% if monitoring_use_infra %}
+{% if monitoring_use_infra %}
       nodeSelector:
         node-role.kubernetes.io/infra: ""
-      {% endif %}
+{% endif %}
       volumeClaimTemplate:
+        metadata:
+          name: prometheus-pvc
         spec:
-          {% if prometheus_storage_class is defined %}
+{% if prometheus_storage_class is defined %}
           storageClassName: {{ prometheus_storage_class }}
-          {% endif %}
+{% endif %}
           resources:
             requests:
               storage: {{ prometheus_storage_size }}
     alertmanagerMain:
-      baseImage: openshift/prometheus-alertmanager
-      {% if monitoring_use_infra %}
+{% if monitoring_use_infra %}
       nodeSelector:
         node-role.kubernetes.io/infra: ""
-      {% endif %}
+{% endif %}
       volumeClaimTemplate:
+        metadata:
+          name: alertmanager-pvc
         spec:
-          {% if alertmanager_storage_class is defined %}
+{% if alertmanager_storage_class is defined %}
           storageClassName: {{ alertmanager_storage_class }}
-          {% endif %}
+{% endif %}
           resources:
             requests:
               storage: {{ alertmanager_storage_size }}
-    nodeExporter:
-      baseImage: openshift/prometheus-node-exporter
-    kubeRbacProxy:
-      baseImage: quay.io/coreos/kube-rbac-proxy
     kubeStateMetrics:
-      baseImage: quay.io/coreos/kube-state-metrics
-      {% if monitoring_use_infra %}
+{% if monitoring_use_infra %}
       nodeSelector:
         node-role.kubernetes.io/infra: ""
-      {% endif %}
+{% endif %}
     grafana:
-      baseImage: grafana/grafana
-      {% if monitoring_use_infra %}
+{% if monitoring_use_infra %}
       nodeSelector:
         node-role.kubernetes.io/infra: ""
-      {% endif %}
-    auth:
-      baseImage: openshift/oauth-proxy
+{% endif %}
     k8sPrometheusAdapter:
-      {% if monitoring_use_infra %}
+{% if monitoring_use_infra %}
       nodeSelector:
         node-role.kubernetes.io/infra: ""
-      {% endif %}
+{% endif %}
+    openshiftStateMetrics:
+{% if monitoring_use_infra %}
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+{% endif %}
+    thanosQuerier:
+{% if monitoring_use_infra %}
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+{% endif %}
+    telemeterClient:
+      enabled: true
+{% if monitoring_use_infra %}
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+{% endif %}
