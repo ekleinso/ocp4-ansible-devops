@@ -39,8 +39,6 @@
     image_registry_storage:
     - '{"pvc":{"claim":"{{ image_registry_pvc }}"}'
     - '}'
-    image_registry_route:
-    - '{"defaultRoute": true}'
     image_registry_nodeselector:
     - '{"nodeSelector":{"node-role.kubernetes.io/infra": ""}'
     - '}'
@@ -100,8 +98,8 @@
     name: cluster
     patch:
       - op: add
-        path: /spec
-        value: "{{ image_registry_route | join('') }}"
+        path: /spec/defaultRoute
+        value: true
   when:
     - reg_imagecfg['resources'][0]['spec']['defaultRoute'] is not defined
 
