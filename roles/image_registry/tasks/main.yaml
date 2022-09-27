@@ -39,6 +39,11 @@
     image_registry_storage:
     - '{"pvc":{"claim":"{{ image_registry_pvc }}"}'
     - '}'
+    image_registry_route:
+    - '{"defaultRoute":true}'
+    image_registry_nodeselector:
+    - '{"nodeSelector":{"node-role.kubernetes.io/infra": ""}'
+    - '}'
 
 # Configure PVC storage provided the variable image_registry_emptydir variable
 # is false.
@@ -86,6 +91,32 @@
   when:
     - image_registry_emptydir | bool
     - reg_imagecfg['resources'][0]['spec']['storage']['emptyDir'] is defined
+###############################################################################
+
+- name: Expose route for Image Registry
+  kubernetes.core.k8s_json_patch:
+    api_version: imageregistry.operator.openshift.io/v1
+    kind: Config
+    name: cluster
+    patch:
+      - op: add
+        path: /spec
+        value: '{"defaultRoute":true}'
+  when:
+    - reg_imagecfg['resources'][0]['spec']['defaultRoute'] is not defined
+
+- name: Move Image Registry to infra nodes
+  kubernetes.core.k8s_json_patch:
+    api_version: imageregistry.operator.openshift.io/v1
+    kind: Config
+    name: cluster
+    patch:
+      - op: add
+        path: /spec
+        value: "{{ image_registry_nodeselector | join('') }}"
+  when:
+    - image_registry_use_infra 
+
 ###############################################################################
 
 ###############################################################################
