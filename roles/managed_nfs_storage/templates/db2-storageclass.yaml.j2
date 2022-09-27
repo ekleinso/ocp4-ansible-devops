@@ -1,0 +1,16 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  labels:
+    app: nfs-client-provisioner
+  name: {{ nfs_storage_class }}-db2
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: {{ nfs_provisioner_name }}
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+parameters:
+  archiveOnDelete: "false"
+mountOptions:
+- v4.2
+- context="system_u:object_r:container_file_t:s0"

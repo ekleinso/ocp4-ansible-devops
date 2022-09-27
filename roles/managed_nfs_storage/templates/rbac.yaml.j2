@@ -1,0 +1,105 @@
+---
+allowHostDirVolumePlugin: true
+allowHostIPC: false
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+allowPrivilegeEscalation: true
+allowPrivilegedContainer: false
+allowedCapabilities: null
+apiVersion: security.openshift.io/v1
+defaultAddCapabilities: null
+fsGroup:
+  type: RunAsAny
+groups: []
+kind: SecurityContextConstraints
+metadata:
+  annotations:
+    kubernetes.io/description: 'hostmount-anyuid provides all the features of the
+      restricted SCC but allows host mounts and any UID by a pod.  This is primarily
+      used by the persistent volume recycler. WARNING: this SCC allows host file system
+      access as any UID, including UID 0.  Grant with caution.'
+  name: {{ nfs_project }}-hostmount-anyuid
+readOnlyRootFilesystem: false
+requiredDropCapabilities:
+- MKNOD
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: MustRunAs
+supplementalGroups:
+  type: RunAsAny
+users:
+- system:serviceaccount:{{ nfs_project }}:nfs-client-provisioner
+volumes:
+- configMap
+- downwardAPI
+- emptyDir
+- hostPath
+- nfs
+- persistentVolumeClaim
+- projected
+- secret
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  labels:
+    app: nfs-client-provisioner
+  name: nfs-client-provisioner-runner
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "update", "patch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  labels:
+    app: nfs-client-provisioner
+  name: run-nfs-client-provisioner
+subjects:
+  - kind: ServiceAccount
+    name: nfs-client-provisioner
+    namespace: {{ nfs_project }}
+roleRef:
+  kind: ClusterRole
+  name: nfs-client-provisioner-runner
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  labels:
+    app: nfs-client-provisioner
+  name: leader-locking-nfs-client-provisioner
+  namespace: {{ nfs_project }}
+rules:
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  labels:
+    app: nfs-client-provisioner
+  name: leader-locking-nfs-client-provisioner
+  namespace: {{ nfs_project }}
+subjects:
+  - kind: ServiceAccount
+    name: nfs-client-provisioner
+    namespace: {{ nfs_project }}
+roleRef:
+  kind: Role
+  name: leader-locking-nfs-client-provisioner
+  apiGroup: rbac.authorization.k8s.io

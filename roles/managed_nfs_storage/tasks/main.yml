@@ -1,0 +1,8 @@
+---
+# tasks file for managed_nfs_server
+
+# Only invoke the configure-nfs.yml tasks if both nfs_server and nfs_path are configured
+- include_tasks: configure-nfs.yml
+  when:
+    - nfs_server and nfs_server_path
+
