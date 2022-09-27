@@ -101,7 +101,7 @@
     patch:
       - op: add
         path: /spec
-        value: '{"defaultRoute":"true"}'
+        value: "{{ image_registry_route }}"
   when:
     - reg_imagecfg['resources'][0]['spec']['defaultRoute'] is not defined
 
