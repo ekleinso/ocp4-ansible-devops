@@ -84,7 +84,7 @@
         path: /spec/storage
         value: '{"emptyDir":{}}'
   when:
-    - image_regitry_emptydir | bool
+    - image_registry_emptydir | bool
     - reg_imagecfg['resources'][0]['spec']['storage']['emptyDir'] is defined
 ###############################################################################
 
