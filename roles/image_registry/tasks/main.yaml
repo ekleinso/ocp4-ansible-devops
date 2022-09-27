@@ -108,7 +108,7 @@
     patch:
       - op: add
         path: /spec/nodeSelector
-        value: '{"node-role.kubernetes.io/infra": ""}'
+        value: {"node-role.kubernetes.io/infra": ""}
   when:
     - image_registry_use_infra == "true"
 
