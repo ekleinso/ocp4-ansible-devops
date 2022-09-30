@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------------------------------------------
 db2_namespace: "{{ lookup('env', 'DB2_NAMESPACE') | default('db2u', true) }}"
 
-db2_instance_name: "{{ lookup('env', 'DB2_INSTANCE_NAME') | default(db2_namespace'-db01', true) }}" # e.g. db2u-iot or db2u-manage
+db2_instance_name: "{{ lookup('env', 'DB2_INSTANCE_NAME') | default('db2u-db01', true) }}" # e.g. db2u-iot or db2u-manage
 db2_dbname: "{{ lookup('env', 'DB2_DBNAME') | default('BLUDB', true) }}"
 db2_version: "{{ lookup('env', 'DB2_VERSION') | default('11.5.7.0-cn4', true)}}"
 db2_jdbc_username: db2inst1
