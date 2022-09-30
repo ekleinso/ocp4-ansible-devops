@@ -173,6 +173,11 @@
   retries: 15 # approx 5 minutes before we give up
   delay: 20
 
+- name: "Create Db2u route"
+  kubernetes.core.k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'templates/tlsroute.yml.j2') }}"
+    
 # 12. Delete db2 pod on intial setup only, to workaround db2 issue
 # that was causing TLS connection issues when the pod was first started
 # -----------------------------------------------------------------------------
