@@ -41,9 +41,6 @@ spec:
       name: "{{ db2_dbname }}"
       settings:
         dftTableOrg: "{{db2_table_org }}"
-      ssl:
-        secretName: "db2u-certificate"
-        certLabel: "CN=db2u"
     instance:
       registry:
         DB2_4K_DEVICE_SUPPORT: "{{ db2_4k_device_support }}"
