@@ -1,0 +1,8 @@
+---
+- name: Deploy db2
+  gather_facts: no
+  hosts: localhost
+
+  roles:
+   - ibm.mas_devops.ibm_catalogs
+   - ibmce.ocp_ansible.db2
