@@ -185,7 +185,16 @@
     state: absent
   when: initial_db2_cluster_lookup.resources | length == 0
 
-# 13. Wait for the statefulset to be ready
+# 13. create an LDAP user if db2_ldap_username specified
+# -----------------------------------------------------------------------------
+- include_tasks: tasks/create_ldap_user.yml
+  when:
+    - db2_ldap_username is defined
+    - db2_ldap_username != ""
+    - db2_ldap_password is defined
+    - db2_ldap_password != ""
+
+# 14. Wait for the statefulset to be ready
 # -----------------------------------------------------------------------------
 - name: "Wait for Db2 Stateful set to be ready"
   kubernetes.core.k8s_info:

@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------------------------------------------
 db2_namespace: "{{ lookup('env', 'DB2_NAMESPACE') | default('db2u', true) }}"
 
-db2_instance_name: "{{ lookup('env', 'DB2_INSTANCE_NAME') }}" # e.g. db2u-iot or db2u-manage
+db2_instance_name: "{{ lookup('env', 'DB2_INSTANCE_NAME') | default(db2_namespace'-db01', true) }}" # e.g. db2u-iot or db2u-manage
 db2_dbname: "{{ lookup('env', 'DB2_DBNAME') | default('BLUDB', true) }}"
 db2_version: "{{ lookup('env', 'DB2_VERSION') | default('11.5.7.0-cn4', true)}}"
 db2_jdbc_username: db2inst1
@@ -45,6 +45,10 @@ db2_logs_storage_accessmode: "{{ lookup('env', 'DB2_LOGS_STORAGE_ACCESSMODE') | 
 db2_temp_storage_class: "{{ lookup('env', 'DB2_TEMP_STORAGE_CLASS') }}"
 db2_temp_storage_size: "{{ lookup('env', 'DB2_TEMP_STORAGE_SIZE') | default('100Gi', true) }}"
 db2_temp_storage_accessmode: "{{ lookup('env', 'DB2_TEMP_STORAGE_ACCESSMODE') | default('ReadWriteOnce', true) }}"
+
+# Config ldap user and password
+db2_ldap_username: "{{ lookup('env', 'DB2_LDAP_USERNAME') }}"
+db2_ldap_password: "{{ lookup('env', 'DB2_LDAP_PASSWORD') }}"
 
 # Request/limit defaults
 # -----------------------------------------------------------------------------------------------------------------
