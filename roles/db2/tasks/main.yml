@@ -71,7 +71,7 @@
   kubernetes.core.k8s_info:
     api_version: apps/v1
     name: db2u-operator-manager
-    namespace: {{ db2_namespace }}
+    namespace: "{{ db2_namespace }}""
     kind: Deployment
   register: _operand_deployment
   until: _operand_deployment.resources[0].status.availableReplicas is defined
