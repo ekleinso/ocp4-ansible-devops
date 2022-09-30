@@ -1,0 +1,21 @@
+galaxy_info:
+  author: Eric Kleinsorgen
+  description: Deploy IBM Db2 instance
+  company: IBM
+
+  license: EPL-2.0
+
+  min_ansible_version: 2.10
+
+  platforms:
+    - name: GenericLinux
+      versions:
+        - all
+
+  galaxy_tags:
+    - ibmce
+    - ocp
+    - devops
+    - db2
+
+dependencies: []
