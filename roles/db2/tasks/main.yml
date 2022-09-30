@@ -177,7 +177,7 @@
   kubernetes.core.k8s:
     apply: yes
     definition: "{{ lookup('template', 'templates/tlsroute.yml.j2') }}"
-    
+
 # 12. Delete db2 pod on intial setup only, to workaround db2 issue
 # that was causing TLS connection issues when the pod was first started
 # -----------------------------------------------------------------------------
@@ -218,3 +218,21 @@
   retries: 20 # approx 10 minutes before we give up
   delay: 30 # seconds
 
+# 16. Provide connection information to the user
+# -----------------------------------------------------------------------------
+- name: "Get instance password"
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    name: "c-{{ db2_instance_name | lower }}-instancepassword"
+    namespace: "{{ db2_namespace }}"
+  register: db2_instancepassword
+
+- name: "Connection information"
+  debug:
+    msg:
+      - "Host .............. {{db2_instance_name | lower }}-{{db2_namespace}}.{{_cluster_subdomain.resources[0].spec.domain}}"
+      - "Port .............. {{ _db2_instance_engn_svc.resources[0].spec.ports[0].nodePort }}"
+      - "User .............. db2inst1"
+      - "Password .......... {{ db2_instancepassword.resources[0].data.password | b64decode }}"
+      - "DB name ........... {{ db2_dbname }}"
