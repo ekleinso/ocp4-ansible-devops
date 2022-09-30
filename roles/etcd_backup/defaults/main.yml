@@ -4,6 +4,7 @@
 etcd_backup_namespace: "openshift-cluster-ops"
 etcd_backup_username: "etcd-backup-user"
 etcd_backup_user: "system:serviceaccount:{{ etcd_backup_namespace }}:{{ etcd_backup_username }}"
+etcd_backup_storageclass: "{{ lookup('env', 'ETCD_BACKUP_STORAGECLASS') | default('', true) }}"
 etcd_cluster_id: "demo"
 etcd_backup_pvc_claim: "{{ etcd_cluster_id }}-etcd-backup"
 etcd_backup_volume_size: "10Gi"
