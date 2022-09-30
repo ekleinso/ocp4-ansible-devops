@@ -27,8 +27,6 @@
       - "Db2 database instanceId ...... {{ db2_instance_name }}"
       - "Db2 database name ............ {{ db2_dbname }}"
       - "Db2 version .................. {{ db2_version }}"
-      - "MAS Instance ID .............. {{ mas_instance_id }}"
-      - "MAS Config directory ......... {{ mas_config_dir }}"
 
 
 # 4. Install a Db2u Operator
