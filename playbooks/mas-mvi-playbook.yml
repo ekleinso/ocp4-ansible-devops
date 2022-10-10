@@ -1,0 +1,93 @@
+---
+- name: Install GPU Operator
+  gather_facts: no
+  hosts: localhost
+  vars:
+   gpu_channel: v1.8
+   gpu_namespace: openshift-operators
+   gpu_driver_version: 450.80.02
+
+   default_storageclass: sat-ocs-cephfs-gold
+
+  roles:
+   - ibmce.ocp_ansible.wait_for_odf
+   - ibmce.ocp_ansible.image_registry
+   - ibm.mas_devops.nvidia_gpu
+
+- name: MVI Prep Tasks
+  gather_facts: no
+  hosts: localhost
+  vars:
+   odf_retries: "{{ lookup('env', 'ODF_RETRIES') | default('20', true) }}"
+   odf_delay: "{{ lookup('env', 'ODF_DELAY') | default('60', true) }}"
+   mas_instance_id: "{{ lookup('env', 'MAS_INSTANCE_ID') }}"
+   mas_app_id: visualinspection
+
+  tasks:
+  - name: "MVI prerequisite : Configure namespace"
+    set_fact:
+      mas_app_namespace: "mas-{{ mas_instance_id }}-{{ mas_app_id }}"
+
+  - name: "MVI prerequisite : Configure anyuid permissions in the {{ mas_app_namespace }} namespace"
+    shell: |
+      oc adm policy add-scc-to-user anyuid system:serviceaccount:{{ mas_app_namespace }}:ibm-mas-visualinspection-operator
+
+  - name: "Launch SBO install"
+    include_role:
+      name: ibm.mas_devops.sbo
+      tasks_from: "install/stable.yml"
+
+- name: Deploy Suite for MVI
+  gather_facts: no
+  hosts: localhost
+  vars:
+   cluster_file_storage_class: sat-ocs-cephfs-gold
+   cluster_block_storage_class: sat-ocs-cephrbd-gold
+
+   mas_instance_id: "{{ lookup('env', 'MAS_INSTANCE_ID') }}"
+   mas_config_dir: "{{ lookup('env', 'MAS_CONFIG_DIR') }}/config"
+   mas_channel: 8.8.x
+   mas_entitlement_key: "{{ lookup('env', 'IBM_ENTITLEMENT_KEY') }}"
+   mas_config_scope: wsapp
+   mas_workspace_id: main
+   mas_workspace_name: Main MVI workspace
+   mas_application_id: visualinspection
+   mas_app_id: visualinspection
+   mas_app_channel: "{{ lookup('env', 'MAS_APP_CHANNEL') | default('8.6.x', true) }}"
+   # Application Configuration - Spec
+   mas_app_spec:
+     settings:
+       storage:
+         size: 100Gi
+         storageClassName: "{{cluster_file_storage_class}}"
+     size: 1
+   sls_entitlement_key: "{{ lookup('env', 'IBM_ENTITLEMENT_KEY') }}"
+   sls_namespace: "mas-{{mas_instance_id}}-sls"
+   sls_mongodb_cfg_file: "{{mas_config_dir}}/mongo-mongoce.yml"
+
+   bootstrap:
+    license_id: "10005a16b4d7"
+    license_file: "{{mas_config_dir}}/entitlement.lic"
+
+   ibm_entitlement_key: "{{ lookup('env', 'IBM_ENTITLEMENT_KEY') }}"
+
+   uds_event_scheduler_frequency: '@daily'
+   uds_contact:
+    email: "tz@us.ibm.com"
+    first_name: "Tech"
+    last_name: "Zone"
+   uds_storage_class: "{{cluster_file_storage_class}}"
+  roles:
+   - ibm.mas_devops.ibm_catalogs
+   - ibm.mas_devops.common_services
+   - ibm.mas_devops.cert_manager
+   - ibm.mas_devops.sbo
+   - ibm.mas_devops.mongodb
+   - ibm.mas_devops.sls
+   - ibm.mas_devops.gencfg_workspace
+   - ibm.mas_devops.uds
+   - ibm.mas_devops.suite_install
+   - ibm.mas_devops.suite_config
+   - ibm.mas_devops.suite_verify
+   - ibm.mas_devops.suite_app_install
+   - ibm.mas_devops.suite_app_config
