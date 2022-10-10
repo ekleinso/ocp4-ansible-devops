@@ -6,6 +6,11 @@
     state: present
     definition: "{{ lookup('template', 'namespace.yaml.j2') }}"
 
+- name: Create ServiceAccount
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'serviceaccount.yaml.j2') }}"
+
 - name: Create SCC
   k8s:
     state: present
@@ -45,7 +50,7 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'db2-storageclass.yaml.j2') }}"
-  when: nfs_db2_support
+  when: nfs_db2_support is true
 
 - name: Wait for Deployment to be ready
   k8s_info:
