@@ -45,7 +45,7 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'db2-storageclass.yaml.j2') }}"
-  when: "{{ nfs_db2_support }}"
+  when: nfs_db2_support
 
 - name: Wait for Deployment to be ready
   k8s_info:
@@ -53,10 +53,10 @@
     kind: Deployment
     namespace: "{{ nfs_project }}"
     name: nfs-client-provisioner
-  register: nfs-client-provisioner
+  register: nfs_client_provisioner
   vars:
     status_query: "resources[*].status.readyReplicas"
-    update_status: "{{ nfs-client-provisioner | json_query(status_query) }}"
+    update_status: "{{ nfs_client_provisioner | json_query(status_query) }}"
   until:
     - update_status == ['1']
   retries: "10" # wait for 10 minutes (10 retries x 60 sec = 600 sec)
