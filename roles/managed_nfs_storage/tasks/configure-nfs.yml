@@ -63,6 +63,6 @@
     status_query: "resources[0].status.readyReplicas"
     update_status: "{{ nfs_client_provisioner | json_query(status_query) }}"
   until:
-    - update_status == ['1']
+    - update_status == '1'
   retries: "10" # wait for 10 minutes (10 retries x 60 sec = 600 sec)
   delay: "60"
