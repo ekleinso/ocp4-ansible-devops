@@ -5,7 +5,7 @@ nfs_project: "{{ lookup('env', 'NFS_PROJECT') | default('managed-nfs-storage', t
 nfs_provisioner_image: "{{ lookup('env', 'NFS_PROVISIONER_IMAGE') | default('k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner@sha256:63d5e04551ec8b5aae83b6f35938ca5ddc50a88d85492d9731810c31591fa4c9', true) }}"
 nfs_provisioner_name: "{{ lookup('env', 'NFS_PROVISIONER_NAME') | default('managed-nfs-storage', true) }}"
 nfs_is_default: "{{ lookup('env', 'NFS_IS_DEFAULT') | default('false', true) }}"
-nfs_storage_class: "{{ lookup('env', 'NFS_STORAGE_CLASS') | default('managed-nfs-storage', true) }}"\
+nfs_storage_class: "{{ lookup('env', 'NFS_STORAGE_CLASS') | default('managed-nfs-storage', true) }}"
 nfs_db2_support: "{{ lookup('env', 'NFS_DB2_SUPPORT') | default('false', true) }}"
 
 nfs_server: "{{ lookup('env', 'NFS_SERVER') | default('', true) }}"
