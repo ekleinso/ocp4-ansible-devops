@@ -18,7 +18,7 @@
           You may ignore the previous error message.
 
     - name: Get current clusters etcd member pods
-      k8s_info:
+      kubernetes.core.k8s_info:
         api_version: v1
         kind: Pod
         namespace: openshift-etcd

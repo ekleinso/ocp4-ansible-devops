@@ -1,8 +1,21 @@
 ---
+
+# 1. Provide debug information to the user
+# -----------------------------------------------------------------------------
+- name: "Debug information"
+  debug:
+    msg:
+      - "Cluster ID ................... {{ etcd_cluster_id }}"
+      - "Namespace .................... {{ etcd_backup_namespace }}"
+      - "Service Account .............. {{ etcd_backup_username }}"
+      - "Storage class ................ {{ etcd_backup_storageclass }}"
+      - "PVC Name ..................... {{ etcd_backup_pvc_claim }}"
+      - "Volume Size .................. {{ etcd_backup_volume_size }}"
+
 # tasks file for etcd-backup
 
 - name: Create Namespace
-  k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'namespace.yaml.j2') }}"
 
@@ -24,12 +37,10 @@
     backup_scripts:
       - "backup_script-{{ ocp_version }}.sh"
       - "backup_script-{{ ocp_major_version }}.sh"
-      - "backup_script-4.7.sh"
-      # The backup script hasn't changed between OCP 4.5 and OCP 4.6
-      # So defaulting to the 4.5 version of the script.
+      - "etcd-snapshot-backup-disconnected.sh"
     etcd_backup_script: "{{ lookup('first_found', backup_scripts) }}"
 
 - name: Create CronJob
-  k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'cronjob.yaml.j2') }}"
