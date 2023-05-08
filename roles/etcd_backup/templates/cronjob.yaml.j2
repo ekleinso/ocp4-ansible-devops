@@ -89,6 +89,6 @@ spec:
             configMap:
               name: "{{ etcd_backup_configmap }}"
               defaultMode: 0755
-  schedule: '0 2 * * *'
+  schedule: '0 8 * * *'
   startingDeadlineSeconds: 200
   successfulJobsHistoryLimit: 5

@@ -11,9 +11,9 @@ if [ $? -eq 0 ]; then
     # Making sure we exit clean witout errors only if the cp command is
     # successful
         echo 'Copied backup files to PVC mount point.'
-        echo 'Removing backups older than 10 days.'
-        find /assets/backup/* -type d -ctime +10
-        find /assets/backup/* -type d -ctime +10 -exec rm -rf {} \;
+        echo 'Removing backups older than 5 days.'
+        find /assets/backup/* -type d -ctime +5
+        find /assets/backup/* -type d -ctime +5 -exec rm -rf {} \;
         exit 0
     fi
 fi
