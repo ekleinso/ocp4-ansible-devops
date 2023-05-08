@@ -139,8 +139,7 @@ ansible-playbook roles/etcd-backup/apply/main.yml \
                  -e etcd_backup_volume_size=100Gi
 ----
 
-IMPORTANT: The default schedule for the cron job is every 5 minutes. I believe
-that this is excessive. However keeping it short was handy for troubleshooting.
+IMPORTANT: The default schedule for the cron job is every day at 8AM UTC. 
 
 TODO:
 
