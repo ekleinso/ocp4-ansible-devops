@@ -1,7 +1,7 @@
 ---
 # defaults file for etcd-backup
 
-etcd_backup_namespace: "{{ lookup('env', 'ETCD_BACKUP_NAMESPACE') | default('ibm-post-deployment', true) }}"
+etcd_backup_namespace: "{{ lookup('env', 'ETCD_BACKUP_NAMESPACE') | default('ibm-etcd-backup', true) }}"
 etcd_backup_username: "{{ lookup('env', 'ETCD_BACKUP_USERNAME') | default('etcd-backup-user', true) }}"
 etcd_backup_user: "system:serviceaccount:{{ etcd_backup_namespace }}:{{ etcd_backup_username }}"
 etcd_backup_storageclass: "{{ lookup('env', 'ETCD_BACKUP_STORAGECLASS') | default('', true) }}"

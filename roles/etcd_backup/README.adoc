@@ -144,3 +144,44 @@ IMPORTANT: The default schedule for the cron job is every day at 8AM UTC.
 TODO:
 
   - Make the cron schedule a vairable so that it can be customised.
+
+To install from in cluster
+----
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: install-etcd-backup
+  namespace: ibm-post-deployment
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccount: ibm-deployment-sa
+      serviceAccountName: ibm-deployment-sa
+      securityContext:
+        runAsUser: 0
+      containers:
+        - name: install-etcd-backup
+          image: 'quay.io/openshift/origin-ansible:latest'
+          command:
+            - /bin/sh
+            - '-c'
+          args:
+            - /tmp/ibm-post/etcd-backup.sh
+          env:
+            - name: ETCD_CLUSTER_ID
+              value: <YOUR CLUSTER NAME>
+            - name: ETCD_BACKUP_NAMESPACE
+              value: ibm-post-deployment
+            - name: ETCD_BACKUP_STORAGECLASS
+              value: managed-nfs-storage
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: post-install
+              mountPath: /tmp/ibm-post
+      volumes:
+        - name: post-install
+          secret:
+            secretName: post-install-files
+            defaultMode: 493
+----

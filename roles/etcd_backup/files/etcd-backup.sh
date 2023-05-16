@@ -12,8 +12,8 @@ if [ $? -eq 0 ]; then
     # successful
         echo 'Copied backup files to PVC mount point.'
         echo 'Removing backups older than 5 days.'
-        find /assets/backup/* -type d -ctime +5
-        find /assets/backup/* -type d -ctime +5 -exec rm -rf {} \;
+        find /etcd-backup/* -type d -ctime +5
+        find /etcd-backup/* -type d -ctime +5 | xargs rm -rf
         exit 0
     fi
 fi
