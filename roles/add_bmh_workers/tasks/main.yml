@@ -1,0 +1,116 @@
+---
+- name: Create bmc secret
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ item.name }}-bmc-secret"
+        namespace: openshift-machine-api
+      data:
+        password: "{{ item.bmcpassword | b64encode }}"
+        username: "{{ item.bmcuser | b64encode }}"
+  loop: "{{ bmh_nodes }}"
+
+- name: Configure BareMetalHost
+  k8s:
+    definition:
+      apiVersion: metal3.io/v1alpha1
+      kind: BareMetalHost
+      metadata:
+        name: "{{ item.name }}"
+        namespace: openshift-machine-api
+      spec:
+        automatedCleaningMode: metadata
+        bmc:
+          address: "{{ item.bmcurl }}"
+          credentialsName: "{{ item.name }}-bmc-secret"
+          disableCertificateVerification: true
+        bootMACAddress: "{{ item.bootMACAddress }}"
+        bootMode: "{{ item.bootMode }}"
+        online: "{{ item.online }}"
+        rootDeviceHints: 
+          deviceName: "{{ item.rootDevice }}"
+  loop: "{{ bmh_nodes }}"
+
+#- name: Wait for BareMetalHost to start inspection
+#  k8s_info:
+#    api_version: metal3.io/v1alpha1
+#    kind: BareMetalHost
+#    name: "{{ item.name }}"
+#    namespace: openshift-machine-api
+#  register: bmh
+#  until: bmh.resources[0].status.provisioning.state == "inspecting"
+#  retries: 30
+#  delay: 10
+#  when: bmh.resources[0].status.provisioning.state not in ["available", "unmanaged", "externally provisioned"]
+#  loop: "{{ bmh_nodes }}"
+
+- name: Wait for BareMetalHost to be Ready
+  k8s_info:
+    api_version: metal3.io/v1alpha1
+    kind: BareMetalHost
+    name: "{{ item.name }}"
+    namespace: openshift-machine-api
+  register: bmh
+  until: bmh.resources[0].status.provisioning.state == "available" or bmh.resources[0].status.provisioning.state == "externally provisioned" or bmh.resources[0].status.provisioning.state == "provisioned"
+  retries: 30
+  delay: 30
+  loop: "{{ bmh_nodes }}"
+
+#- name: Wait for BareMetalHost to be PoweredOff
+#  k8s_info:
+#    api_version: metal3.io/v1alpha1
+#    kind: BareMetalHost
+#    name: "{{ item.name }}"
+#    namespace: openshift-machine-api
+#  register: bmh
+#  until: not bmh.resources[0].status.poweredOn
+#  retries: 30
+#  delay: 30
+#  when: bmh.resources[0].status.provisioning.state == "provisioned"
+#  loop: "{{ bmh_nodes }}"
+
+- name: Get MachineSet name
+  k8s_info:
+    api_version: machine.openshift.io/v1beta1
+    kind: MachineSet
+    namespace: openshift-machine-api
+  register: machineset
+
+- name: Set MachineSet Replicas
+  k8s:
+    definition:
+      apiVersion: machine.openshift.io/v1beta1
+      kind: MachineSet
+      metadata:
+        name: "{{ machineset.resources[0].metadata.name }}"
+        namespace: openshift-machine-api
+      spec:
+        replicas: 8
+
+- name: Wait for Nodes to be Ready
+  k8s_info:
+    api_version: v1
+    kind: Node
+    name: "{{ item.name }}"
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 600
+    wait_condition:
+      type: Ready
+      status: "True"
+  loop: "{{ bmh_nodes }}"
+
+- name: add label to nodes
+  kubernetes.core.k8s:
+    state: patched
+    api_version: v1
+    kind: Node
+    name: "{{ item.name }}"
+    definition:
+      metadata:
+        labels:
+          topology.kubernetes.io/region: "{{ item.region }}"
+          topology.kubernetes.io/zone: "{{ item.zone }}"
+  loop: "{{ bmh_nodes }}"

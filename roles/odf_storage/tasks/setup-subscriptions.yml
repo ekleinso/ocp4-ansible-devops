@@ -1,28 +1,40 @@
 
 - name: Create OperatorGroup openshift-storage-operatorgroup
-  kubernetes.core.k8s:
+  k8s:
     state: present
-    definition: "{{ lookup('file', '/files/ocs-og.yaml') | from_yaml }}"
+    definition: "{{ lookup('template', 'OperatorGroup.j2') }}"
 
 - name: Create Subscription for ocs
-  kubernetes.core.k8s:
+  k8s:
     state: present
-    definition: "{{ lookup('file', '/files/ocs-sub.yaml') | from_yaml }}"
-  register: reg_ocs_sub
+    definition: "{{ lookup('template', 'subscription.j2') }}"
+  register: reg_odf_sub
 
 - name: Wait for subscriptions to be installed
   k8s_info:
     api_version: operators.coreos.com/v1alpha1
     kind: ClusterServiceVersion
     namespace: openshift-storage
+    label_selectors:
+      - operators.coreos.com/odf-operator.openshift-storage
+    wait: yes
+    wait_sleep: 10
+    wait_timeout: 360
   register: reg_csv_status
-  vars:
-    status_query: "resources[*].status.phase"
-    update_status: "{{ reg_csv_status | json_query(status_query) | flatten | unique }}"
   until:
-    - update_status == ['Succeeded']
-  retries: 10 # wait for 10 minutes (10 retries x 60 sec = 600 sec)
-  delay: 60
-  # TODO: Refine the udpate_status condition we check. As of now it check to
-  #       see if all the operators installed in the namespace have a status of
-  #       Succeeded. Consider just checking the operator that we need installed
+    - reg_csv_status.resources[0].status.phase == "Succeeded" 
+  retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
+  delay: 30
+
+- name: Enable console plugin
+  k8s:
+    state: patched
+    definition:
+      apiVersion: operator.openshift.io/v1
+      kind: Console
+      metadata:
+        name: cluster
+      spec:
+        plugins:
+        - odf-console
+  when: odf_enable_plugin == "true"

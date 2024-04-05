@@ -1,0 +1,132 @@
+---
+apiVersion: v1
+kind: Secret
+stringData:
+  runner.sh: |
+    ansible-galaxy collection install git+https://github.com/ekleinso/ocp4-ansible-devops.git
+    ansible-playbook post-deploy-playbook.yaml
+  post-deploy-playbook.yaml: |
+    ---
+    - name: Configure Cluster
+      gather_facts: no
+      hosts: localhost
+      vars:
+        bmh_nodes:
+          - name: "master01"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.4:8000/redfish/v1/Systems/ocpxe-master01"
+            rootDevice: "/dev/sda"
+            bootMACAddress: "aa:54:00:ea:33:ab"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "esx01"
+          - name: "master02"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.9:8000/redfish/v1/Systems/ocpxe-master02"
+            rootDevice: "/dev/sda"
+            bootMACAddress: "aa:54:00:ea:33:ac"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "esx01"  
+          - name: "master03"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.3:8000/redfish/v1/Systems/ocpxe-master03"
+            rootDevice: "/dev/sda"
+            bootMACAddress: "aa:54:00:ea:33:ad"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "esx01"  
+          - name: "worker01"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.13:8000/redfish/v1/Systems/ocpxe-worker01"
+            rootDevice: "/dev/vda"
+            bootMACAddress: "aa:54:00:ea:33:b0"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "ziggy"
+          - name: "worker02"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.13:8000/redfish/v1/Systems/ocpxe-worker02"
+            rootDevice: "/dev/vda"
+            bootMACAddress: "aa:54:00:ea:33:b1"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "ziggy"
+          - name: "worker03"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.13:8000/redfish/v1/Systems/ocpxe-worker03"
+            rootDevice: "/dev/vda"
+            bootMACAddress: "aa:54:00:ea:33:b2"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "ziggy"
+          - name: "worker04"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.13:8000/redfish/v1/Systems/ocpxe-worker04"
+            rootDevice: "/dev/vda"
+            bootMACAddress: "aa:54:00:ea:33:b3"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "ziggy"
+          - name: "worker05"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.6:8000/redfish/v1/Systems/ocpxe-worker05"
+            rootDevice: "/dev/vda"
+            bootMACAddress: "aa:54:00:ea:33:b4"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "ultron"
+          - name: "worker06"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.6:8000/redfish/v1/Systems/ocpxe-worker06"
+            rootDevice: "/dev/vda"
+            bootMACAddress: "aa:54:00:ea:33:b5"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "viki"
+          - name: "worker07"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.6:8000/redfish/v1/Systems/ocpxe-worker07"
+            rootDevice: "/dev/vda"
+            bootMACAddress: "aa:54:00:ea:33:b6"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "jarvis"
+          - name: "worker08"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.6:8000/redfish/v1/Systems/ocpxe-worker08"
+            rootDevice: "/dev/vda"
+            bootMACAddress: "aa:54:00:ea:33:b7"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "hal"
+
+      roles:
+      - ibmce.ocp_ansible.add_bmh_workers
+metadata:
+  name: post-deployment-scripts
+  namespace: ibm-post-deployment
+type: Opaque
+

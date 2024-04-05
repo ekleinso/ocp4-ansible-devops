@@ -1,0 +1,20 @@
+apiVersion: lvm.topolvm.io/v1alpha1
+kind: LVMCluster
+metadata:
+  name: "{{ lvm_cluster }}"
+  namespace: openshift-storage
+spec:
+  storage:
+    deviceClasses:
+      - deviceSelector:
+          paths:
+            {{ lvm_paths | split(',') | list }}
+        thinPoolConfig:
+          sizePercent: 90
+          name: thin-pool-1
+          overprovisionRatio: 10
+        name: vg1
+  tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists

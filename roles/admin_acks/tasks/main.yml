@@ -1,0 +1,21 @@
+---
+
+- name: Transform list to map using combine
+  set_fact:
+    admin_ack: "{{ admin_ack | default({}) | combine({item.name: item.value}) }}"
+  loop: "{{ admin_acks }}"
+
+- name: Patch ConfigMap
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: admin-acks
+        namespace: openshift-config
+      data: "{{ admin_ack }}"
+  register: result
+
+- name: Display Patch Result
+  debug:
+    var: result

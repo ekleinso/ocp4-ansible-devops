@@ -1,5 +1,5 @@
 - name: get PVC object
-  kubernetes.core.k8s_info:
+  k8s_info:
     api_version: v1
     kind: PersistentVolumeClaim
     name: "{{ etcd_backup_pvc_claim }}"
@@ -7,7 +7,7 @@
   register: reg_etcd_backup_pvc
 
 - name: Create PVC for use with the cron job
-  kubernetes.core.k8s:
+  k8s:
     state: present
     definition: "{{ lookup('template', 'etcd-backup-pvc.yaml.j2') }}"
   when:

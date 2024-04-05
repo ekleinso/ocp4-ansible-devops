@@ -1,0 +1,5 @@
+---
+root_ca: "{{ lookup('env', 'ROOT_CA') | default('', true) }}"
+root_ca_configmap: "{{ lookup('env', 'ROOT_CA_SECRET') | default('user-ca-bundle', true) }}"
+ingress_certificate: "{{ lookup('env', 'INGRESS_CERTIFICATE') | default('', true) }}"
+ingress_key: "{{ lookup('env', 'INGRESS_KEY') | default('', true) }}"

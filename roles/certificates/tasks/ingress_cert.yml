@@ -1,0 +1,54 @@
+---
+- name: Create ingress Secret
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: kubernetes.io/tls
+      metadata:
+        name: custom-cert
+        namespace: openshift-ingress
+      data: 
+        tls.crt: "{{ ingress_certificate }}"
+        tls.key: "{{ ingress_key }}"
+  when: ingress_certificate
+
+- name: Patch Ingress Controller
+  k8s:
+    definition:
+      apiVersion: operator.openshift.io/v1
+      kind: IngressController
+      metadata:
+        name: default
+        namespace: openshift-ingress-operator
+      spec: 
+        defaultCertificate:
+          name: custom-cert
+  when: ingress_certificate
+  register: ingress
+
+- name: Wait for ingress operator to reach Progressing
+  k8s_info:
+    api_version: config.openshift.io/v1
+    kind: ClusterOperator
+    name: ingress
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 600
+    wait_condition:
+      type: Progressing
+      status: "True"
+  when: ingress.changed
+
+- name: Wait for ingress operator to finish Progressing
+  k8s_info:
+    api_version: config.openshift.io/v1
+    kind: ClusterOperator
+    name: ingress
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 600
+    wait_condition:
+      type: Progressing
+      status: "False"
+

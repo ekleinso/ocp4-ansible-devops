@@ -1,0 +1,5 @@
+---
+# defaults file for ocs-local-volume
+
+default_storageclass: "ocs-storagecluster-cephfs"
+odf_channel: "{{ lookup('env', 'ODF_CHANNEL') | default('stable-4.9', true) }}"

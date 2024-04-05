@@ -1,36 +1,17 @@
-== managed_nfs_storage
-This role is used to configure the NFS client provisioner
+== managed-nfs-storage
+This role is used to configure NFS storage provisioner
 
 === Role Variables
 Default role variables that are defined.
 
 ```
-ntp_servers: []
+nfs_server: 
 
-ntp_pools: []
+nfs_path: 
 
 ```
-By default the role will noop if no ntp servers or ntp_pool servers are
+By default the role will noop if no NFS server or NFS path are
 provided.
 
 
-
-=== Example Usage
-Example invocation of the role in a playbook
-
-[source,yaml]
-
-If you would like to configure cutom NTP servers to be used by the chrony
-daemon, you can invoke the role like this
-
-[source,yaml]
-----
-- hosts: localhost
-  tasks:
-    - include_role:
-        name: ocp-ntp
-      vars:
-        ntp_servers:
-          - ntp1.example.com
-          - ntp2.example.com
 ----

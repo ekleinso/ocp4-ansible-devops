@@ -1,0 +1,36 @@
+- name: Prepare GPU Operator environment
+  k8s:
+    state: present
+    definition: "{{ lookup('template', '{{ item }}') }}"
+  loop:
+    - "gpu-namespace.j2"
+    - "gpu-og.j2"
+    - "gpu-subscription.j2"
+
+- name: Wait for GPU Operator to be installed
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    namespace: nvidia-gpu-operator
+    label_selectors:
+      - operators.coreos.com/gpu-operator-certified.nvidia-gpu-operator
+    wait: yes
+    wait_sleep: 10
+    wait_timeout: 360
+  register: gpu_status
+  until: 
+    - gpu_status.resources[0].status.phase == "Succeeded" 
+  retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
+  delay: 30
+
+- name: Deploy ClusterPolicy 
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'ClusterPolicy.j2') }}"
+    wait: yes
+    wait_sleep: 10
+    wait_timeout: 360
+    wait_condition:
+      type: Ready
+      status: "True"
+  register: policy_status

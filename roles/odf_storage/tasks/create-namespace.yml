@@ -1,4 +1,4 @@
-- name: Create project
-  kubernetes.core.k8s:
+- name: Prepare Red Hat OpenShift Data Foundation environment
+  k8s:
     state: present
-    definition: "{{ lookup('file', '/files/ocs-namespace.yaml') | from_yaml }}"
+    definition: "{{ lookup('template', 'namespace.j2') }}"

@@ -1,0 +1,43 @@
+- name: Prepare NFD Operator environment
+  k8s:
+    state: present
+    definition: "{{ lookup('template', '{{ item }}') }}"
+  loop:
+    - "nfd-namespace.j2"
+    - "nfd-og.j2"
+    - "nfd-subscription.j2"
+
+- name: Wait for NFD Operator to be installed
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    namespace: openshift-nfd
+    label_selectors:
+      - operators.coreos.com/nfd.openshift-nfd
+    wait: yes
+    wait_sleep: 10
+    wait_timeout: 360
+  register: reg_csv_status
+  until: 
+    - reg_csv_status.resources[0].status.phase == "Succeeded" 
+  retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
+  delay: 30
+
+- name: Deploy NodeFeatureDiscovery 
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'NodeFeatureDiscovery.j2') }}"
+
+- name: Wait for NFD Instance to be ready
+  k8s_info:
+    api_version: v1
+    kind: Node
+    label_selectors:
+      - feature.node.kubernetes.io/pci-10de.present = true
+    wait: yes
+    wait_sleep: 10
+    wait_timeout: 360
+  register: gpu_node
+
+- debug:
+    var: gpu_node.resources[0].metadata.name

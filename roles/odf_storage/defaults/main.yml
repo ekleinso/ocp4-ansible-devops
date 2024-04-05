@@ -2,4 +2,8 @@
 # defaults file for ocs-local-volume
 
 default_storageclass: "ocs-storagecluster-cephfs"
-odf_channel: "{{ lookup('env', 'ODF_CHANNEL') | default('stable-4.9', true) }}"
+#odf_channel: "{{ lookup('env', 'ODF_CHANNEL') | default('stable-4.12', true) }}"
+odf_mcg_only: "{{ lookup('env', 'ODF_MCG_ONLY') | default('false', true) }}"
+odf_mcg_storageclass: "{{ lookup('env', 'ODF_MCG_STORAGECLASS') | default('managed-nfs-storage', true) }}"
+odf_enable_plugin: "{{ lookup('env', 'ODF_ENABLE_PLUGIN') | default('true', true) }}"
+odf_fake: "{{ lookup('env', 'ODF_FAKE') | default('false', true) }}"

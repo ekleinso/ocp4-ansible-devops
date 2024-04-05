@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: post-deployment
+  namespace: ibm-post-deployment
+spec:
+  containers:
+  - name: post-deployment
+    imagePullPolicy: Always
+    image: quay.io/openshift/origin-ansible:latest
+    command: ["/bin/sh", "-c"]
+    args: 
+      - "sleep 3600"
+    volumeMounts:
+      - name: post-deployment-scripts
+        mountPath: /tmp/post
+  restartPolicy: Never
+  serviceAccount: ibm-deployment-sa
+  volumes:
+    - name: post-deployment-scripts
+      secret:
+        defaultMode: 0755
+        secretName: post-deployment-scripts
+  tolerations:
+    - operator: Exists
+  nodeSelector:
+    node-role.kubernetes.io/master: ''

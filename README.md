@@ -1,7 +1,7 @@
 # ocp4-ansible-devops
 A collection of ansible roles facilitating Day-2 operations for OpenShift
 
-ansible-galaxy collection git+https://github.com/ekleinso/ocp4-ansible-devops.git
+ansible-galaxy collection install git+https://github.com/ekleinso/ocp4-ansible-devops.git
 
 namespace: ibmce
 collection: ocp_ansible

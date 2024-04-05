@@ -1,0 +1,5 @@
+---
+# tasks file for gpu
+
+- include_tasks: nfd.yml
+- include_tasks: nvidia-gpu.yml

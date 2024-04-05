@@ -1,0 +1,11 @@
+---
+catalog:
+  - name: "redhat-operators"
+    value: "60m0s"
+  - name: "certified-operators"
+    value: "60m0s"
+  - name: "community-operators"
+    value: "60m0s"
+source:
+  - name: "redhat-marketplace"
+    value: true

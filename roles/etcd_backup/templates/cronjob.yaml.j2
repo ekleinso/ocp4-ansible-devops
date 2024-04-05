@@ -1,4 +1,4 @@
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   labels:
@@ -89,6 +89,6 @@ spec:
             configMap:
               name: "{{ etcd_backup_configmap }}"
               defaultMode: 0755
-  schedule: '0 8 * * *'
+  schedule: '*/5 * * * *'
   startingDeadlineSeconds: 200
   successfulJobsHistoryLimit: 5

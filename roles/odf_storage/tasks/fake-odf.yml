@@ -1,0 +1,37 @@
+
+- name: Create fake ocs-storagecluster-ceph-rbd StorageClass
+  k8s:
+    state: present
+    definition:
+      allowVolumeExpansion: true
+      apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+        annotations:
+          description: Provides RWO and RWOP Filesystem & Block volumes
+          storageclass.kubernetes.io/is-default-class: "true"
+        name: ocs-storagecluster-ceph-rbd
+      parameters:
+        csi.storage.k8s.io/fstype: xfs
+        topolvm.io/device-class: vg1
+      provisioner: topolvm.io
+      reclaimPolicy: Delete
+      volumeBindingMode: WaitForFirstConsumer
+
+- name: Create fake ocs-storagecluster-cephfs StorageClass
+  k8s:
+    state: present
+    definition:
+      apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+        labels:
+          app: nfs-client-provisioner
+        name: ocs-storagecluster-cephfs
+        annotations:
+          storageclass.kubernetes.io/is-default-class: "false"
+      provisioner: ocpxe/nfs-client-provisioner
+      allowVolumeExpansion: true
+      reclaimPolicy: Delete
+      parameters:
+        archiveOnDelete: "false"

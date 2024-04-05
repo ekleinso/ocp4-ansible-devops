@@ -1,8 +1,13 @@
 ---
-# tasks file for managed_nfs_server
+# tasks file for ocp-nfs
 
-# Only invoke the configure-nfs.yml tasks if both nfs_server and nfs_path are configured
+# Only invoke the configure-nfs.yml tasks if the variable
+# contains a NFS server and NFS path
 - include_tasks: configure-nfs.yml
   when:
-    - nfs_server and nfs_server_path
+    - nfs_server and nfs_path
+
+- include_tasks: configure-nfs-ganesha.yml
+  when:
+    - nfs_ganesha_storageclass
 

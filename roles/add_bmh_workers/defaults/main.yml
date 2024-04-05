@@ -1,0 +1,12 @@
+---
+bmh_nodes:
+  - name: "worker03"
+    bmcuser: "admin"
+    bmcpassword: "password"
+    bmcurl: "redfish-virtualmedia://192.168.7.13:8000/redfish/v1/Systems/ocpxe-worker03"
+    rootDevice: "/dev/vda"
+    bootMACAddress: "aa:54:00:ea:33:b2"
+    bootMode: "UEFI"
+    online: true
+    region: "us-east-1"
+    zone: "us-east-1a"

@@ -19,6 +19,6 @@
 #
 ###############################################################################
 - name: Create ConfigMap for rook ceph operator config
-  kubernetes.core.k8s:
+  k8s:
     state: present
-    definition: "{{ lookup('file', '/files/rook-ceph-operator-config.yaml') | from_yaml }}"
+    definition: "{{ lookup('template', 'rook-ceph-operator-config.j2') }}"

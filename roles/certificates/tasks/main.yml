@@ -1,0 +1,8 @@
+---
+- include_tasks: root_ca_cert.yml
+  when:
+    - ingress_certificate
+
+- include_tasks: ingress_cert.yml
+  when:
+    - ingress_certificate and ingress_key

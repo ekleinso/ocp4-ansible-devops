@@ -1,0 +1,84 @@
+---
+- name: Create ClusterRoleBinding
+  k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: "cluster-admin-{{ item.name }}"
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: cluster-admin
+      subjects:
+      - apiGroup: rbac.authorization.k8s.io
+        kind: User
+        name: "{{ item.name }}"
+  loop: "{{ users }}"
+
+- name: Add a users to a password file suitable for use by OpenShift
+  community.general.htpasswd:
+    path: /tmp/ocp_passwords
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    hash_scheme: ldap_sha1
+  loop: "{{ users }}"
+
+- name: Create htpasswd secret
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: htpasswd-secret
+        namespace: openshift-config
+      data: 
+        htpasswd:  "{{ lookup('ansible.builtin.file', '/tmp/ocp_passwords') | b64encode }}"
+
+- name: Remove file (delete file)
+  ansible.builtin.file:
+    path: /tmp/ocp_passwords
+    state: absent
+
+- name: Enable htpasswd authentication
+  k8s:
+    definition:
+      apiVersion: config.openshift.io/v1
+      kind: OAuth
+      metadata:
+        name: cluster
+      spec: 
+        identityProviders: 
+          - htpasswd:
+              fileData:
+                name: htpasswd-secret
+            mappingMethod: claim
+            name: htpasswd
+            type: HTPasswd
+  register: oauth
+
+- name: Wait for Authentication operator to reach Progressing
+  k8s_info:
+    api_version: config.openshift.io/v1
+    kind: ClusterOperator
+    name: authentication
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 600
+    wait_condition:
+      type: Progressing
+      status: "True"
+  when: oauth.changed
+
+- name: Wait for Authentication operator to finish Progressing
+  k8s_info:
+    api_version: config.openshift.io/v1
+    kind: ClusterOperator
+    name: authentication
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 600
+    wait_condition:
+      type: Progressing
+      status: "False"
+      reason: AsExpected

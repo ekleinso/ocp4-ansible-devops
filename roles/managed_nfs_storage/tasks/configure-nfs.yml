@@ -1,68 +1,27 @@
 ---
 # tasks file for nfs
 
-- name: Create Namespace
+- name: Prepare NFS Client Provisioner environment
   k8s:
     state: present
-    definition: "{{ lookup('template', 'namespace.yaml.j2') }}"
+    definition: "{{ lookup('template', '{{ item }}') }}"
+  loop:
+    - "namespace.j2"
+    - "scc.j2"
+    - "StorageClass.j2"
+    - "ServiceAccount.j2"
+    - "ClusterRole.j2"
+    - "ClusterRoleBinding.j2"
+    - "role.j2"
+    - "RoleBinding.j2"
 
-- name: Create ServiceAccount
+- name: Deploy NFS Client Provisioner
   k8s:
     state: present
-    definition: "{{ lookup('template', 'serviceaccount.yaml.j2') }}"
-
-- name: Create SCC
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'scc.yaml.j2') }}"
-
-- name: Create ClusterRole
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'clusterrole.yaml.j2') }}"
-
-- name: Create Role
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'role.yaml.j2') }}"
-
-- name: Create ClusterRoleBinding
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'clusterrolebinding.yaml.j2') }}"
-
-- name: Create RoleBinding
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'rolebinding.yaml.j2') }}"
-
-- name: Create Deployment
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'deployment.yaml.j2') }}"
-
-- name: Create Storage Class
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'storageclass.yaml.j2') }}"
-
-- name: Create DB2 Storage Class
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'db2-storageclass.yaml.j2') }}"
-  when: nfs_db2_support is true
-
-- name: Wait for Deployment to be ready
-  k8s_info:
-    api_version: apps/v1
-    kind: Deployment
-    namespace: "{{ nfs_project }}"
-    name: nfs-client-provisioner
-  register: nfs_client_provisioner
-  vars:
-    status_query: "resources[0].status.readyReplicas"
-    update_status: "{{ nfs_client_provisioner | json_query(status_query) }}"
-  until:
-    - update_status == '1'
-  retries: "10" # wait for 10 minutes (10 retries x 60 sec = 600 sec)
-  delay: "60"
+    definition: "{{ lookup('template', 'deployment.j2') }}"
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 600
+    wait_condition:
+      type: Available
+      status: "True"

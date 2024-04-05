@@ -1,12 +1,10 @@
 ---
 # defaults file for etcd-backup
 
-etcd_backup_namespace: "{{ lookup('env', 'ETCD_BACKUP_NAMESPACE') | default('ibm-etcd-backup', true) }}"
-etcd_backup_username: "{{ lookup('env', 'ETCD_BACKUP_USERNAME') | default('etcd-backup-user', true) }}"
+etcd_backup_namespace: "openshift-cluster-ops"
+etcd_backup_username: "etcd-backup-user"
 etcd_backup_user: "system:serviceaccount:{{ etcd_backup_namespace }}:{{ etcd_backup_username }}"
-etcd_backup_storageclass: "{{ lookup('env', 'ETCD_BACKUP_STORAGECLASS') | default('', true) }}"
-# oc cluster-info | grep "Kubernetes control plane" | cut -f 2 -d "."
-etcd_cluster_id: "{{ lookup('env', 'ETCD_CLUSTER_ID') | default('demo', true) }}"
+etcd_cluster_id: "demo"
 etcd_backup_pvc_claim: "{{ etcd_cluster_id }}-etcd-backup"
 etcd_backup_volume_size: "10Gi"
 etcd_backup_configmap: "etcd-backup-scripts"

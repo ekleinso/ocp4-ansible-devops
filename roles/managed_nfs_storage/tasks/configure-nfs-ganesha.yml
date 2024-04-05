@@ -1,0 +1,20 @@
+---
+# tasks file for nfs
+
+- name: Prepare NFS Ganesha Provisioner environment
+  k8s:
+    state: present
+    definition: "{{ lookup('template', '{{ item }}') }}"
+  loop:
+    - "nfs-ganesha.j2"
+
+- name: Deploy NFS Ganesha Provisioner
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'nfs-ganesha-deployment.j2') }}"
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 600
+    wait_condition:
+      type: Available
+      status: "True"

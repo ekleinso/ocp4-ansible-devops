@@ -1,0 +1,28 @@
+---
+
+- name: Patch CatalogSources
+  k8s:
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: "{{ item.name }}"
+        namespace: openshift-marketplace
+      spec: 
+        updateStrategy: 
+          registryPoll:
+            interval: "{{ item.value }}"
+  loop: "{{ catalog }}"
+
+- name: Disable CatalogSources
+  k8s:
+    definition:
+      apiVersion: config.openshift.io/v1
+      kind: OperatorHub
+      metadata:
+        name: cluster
+      spec: 
+        sources: 
+          - name: "{{ item.name }}"
+            disabled: "{{ item.value }}"
+  loop: "{{ source }}"

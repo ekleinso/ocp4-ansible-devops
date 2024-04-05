@@ -5,8 +5,7 @@ metadata:
   namespace: {{ etcd_backup_namespace }}
 spec:
   accessModes:
-  - ReadWriteMany
+  - ReadWriteOnce
   resources:
     requests:
       storage: {{ etcd_backup_volume_size }}
-  storageClassName: "{{ etcd_backup_storageclass }}"

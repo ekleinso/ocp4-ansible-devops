@@ -1,7 +1,15 @@
 == etcd-backup
 This role creates a cron job which peforms the following
 
+NOTE: Starting with OCP 4.4 there is a etcd operator. I believe the end goal is
+      to get the backups performed via the etcd operators. A lot has changed.
+      Once the etcd operator takes over the backups we can depricate this role.
+
 link:https://github.com/openshift/cluster-etcd-operator[OpenShift Cluster etcd Operator]
+
+I have made changes to the master branch which will break this role for older
+version for OCP. Please refer to the older versions that are availabe in
+other branches.
 
 - creates a snapshot of the etcd database
 - saves the snapshot to an pvc volume
@@ -12,7 +20,7 @@ IMPORTANT: The files folder has several versions of the backup script. one for
            with openshfit 4.6
 
 ```bash
-$ tree files/
+[sushil@rhltop etcd-backup]$ tree files/
 files/
 ├── backup_script-4.2.sh
 ├── backup_script-4.3.sh
@@ -139,49 +147,9 @@ ansible-playbook roles/etcd-backup/apply/main.yml \
                  -e etcd_backup_volume_size=100Gi
 ----
 
-IMPORTANT: The default schedule for the cron job is every day at 8AM UTC. 
+IMPORTANT: The default schedule for the cron job is every 5 minutes. I believe
+that this is excessive. However keeping it short was handy for troubleshooting.
 
 TODO:
 
   - Make the cron schedule a vairable so that it can be customised.
-
-To install from in cluster
-----
-kind: Job
-apiVersion: batch/v1
-metadata:
-  name: install-etcd-backup
-  namespace: ibm-post-deployment
-spec:
-  template:
-    spec:
-      restartPolicy: Never
-      serviceAccount: ibm-deployment-sa
-      serviceAccountName: ibm-deployment-sa
-      securityContext:
-        runAsUser: 0
-      containers:
-        - name: install-etcd-backup
-          image: 'quay.io/openshift/origin-ansible:latest'
-          command:
-            - /bin/sh
-            - '-c'
-          args:
-            - /tmp/ibm-post/etcd-backup.sh
-          env:
-            - name: ETCD_CLUSTER_ID
-              value: <YOUR CLUSTER NAME>
-            - name: ETCD_BACKUP_NAMESPACE
-              value: ibm-post-deployment
-            - name: ETCD_BACKUP_STORAGECLASS
-              value: managed-nfs-storage
-          imagePullPolicy: Always
-          volumeMounts:
-            - name: post-install
-              mountPath: /tmp/ibm-post
-      volumes:
-        - name: post-install
-          secret:
-            secretName: post-install-files
-            defaultMode: 493
-----

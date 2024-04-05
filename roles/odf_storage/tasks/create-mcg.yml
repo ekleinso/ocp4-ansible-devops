@@ -1,0 +1,11 @@
+
+- name: Create the StorageCluster object
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'mcg-standalone.j2') }}"
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 600
+    wait_condition:
+      type: Available
+      status: "True"

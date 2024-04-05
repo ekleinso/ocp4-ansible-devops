@@ -1,12 +1,29 @@
 ---
 # tasks file for ocs
 
+- name: OC get upgrade channel
+  shell:
+    cmd: oc get clusterversion -o jsonpath='{.items[].spec.channel}{"\n"}'
+  # Since this is a reporting task ...
+  changed_when: false
+  check_mode: false
+  register: odf_channel
+
 - include_tasks: create-namespace.yml
 
 - include_tasks: create-rook-ceph-operator-configmap.yml
+  when: odf_mcg_only != "true"
 
 - include_tasks: setup-subscriptions.yml
 
 - include_tasks: create-storagecluster.yml
+  when: odf_mcg_only != "true"
 
 - include_tasks: setup-default-storageclass.yml
+  when: odf_mcg_only != "true"
+
+- include_tasks: create-mcg.yml
+  when: odf_mcg_only == "true"
+
+- include_tasks: fake-odf.yml
+  when: odf_fake == "true"

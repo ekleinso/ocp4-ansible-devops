@@ -1,0 +1,52 @@
+---
+- name: Configure rootCA ConfigMap
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: "{{ root_ca_configmap }}"
+        namespace: openshift-config
+      data: 
+        ca-bundle.crt: |
+          {{ root_ca | b64decode }}
+  register: configmap
+  when: root_ca_configmap != "user-ca-bundle"
+
+- name: Configure rootCA for proxy
+  k8s:
+    definition:
+      apiVersion: config.openshift.io/v1
+      kind: Proxy
+      metadata:
+        name: cluster
+      spec: 
+        trustedCA:
+          name: "{{ root_ca_configmap }}"
+  when: configmap
+  register: proxy
+
+- name: Wait for openshift-apiserver operator to reach Progressing
+  k8s_info:
+    api_version: config.openshift.io/v1
+    kind: ClusterOperator
+    name: openshift-apiserver 
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 600
+    wait_condition:
+      type: Progressing
+      status: "True"
+  when: proxy.changed
+
+- name: Wait for openshift-apiserver operator to finish Progressing
+  k8s_info:
+    api_version: config.openshift.io/v1
+    kind: ClusterOperator
+    name: openshift-apiserver 
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 900
+    wait_condition:
+      type: Progressing
+      status: "False"
