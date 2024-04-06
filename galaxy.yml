@@ -12,7 +12,7 @@ tags:
   - mvie
   - rhocp
 dependencies:
-  "kubernetes.core": ">=2.2.0,<3.0.0"
+  "kubernetes.core": ">=3.0.0"
   "community.general": ">=5.6.0"
 repository: https://github.com/ekleinso/ansible-devops
 documentation: https://github.com/ekleinso/ansible-devops

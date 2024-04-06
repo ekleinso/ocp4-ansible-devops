@@ -3,6 +3,7 @@ apiVersion: v1
 kind: Secret
 stringData:
   runner.sh: |
+    pip3 install openshift pyyaml kubernetes
     ansible-galaxy collection install git+https://github.com/ekleinso/ocp4-ansible-devops.git
     ansible-playbook post-deploy-playbook.yaml
   post-deploy-playbook.yaml: |
@@ -15,7 +16,7 @@ stringData:
           - name: "master01"
             bmcuser: "admin"
             bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.4:8000/redfish/v1/Systems/ocpxe-master01"
+            bmcurl: "ipmi://192.168.7.65:6171"
             rootDevice: "/dev/sda"
             bootMACAddress: "aa:54:00:ea:33:ab"
             bootMode: "UEFI"
@@ -25,7 +26,7 @@ stringData:
           - name: "master02"
             bmcuser: "admin"
             bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.9:8000/redfish/v1/Systems/ocpxe-master02"
+            bmcurl: "ipmi://192.168.7.65:6172"
             rootDevice: "/dev/sda"
             bootMACAddress: "aa:54:00:ea:33:ac"
             bootMode: "UEFI"
@@ -35,7 +36,7 @@ stringData:
           - name: "master03"
             bmcuser: "admin"
             bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.3:8000/redfish/v1/Systems/ocpxe-master03"
+            bmcurl: "ipmi://192.168.7.65:6173"
             rootDevice: "/dev/sda"
             bootMACAddress: "aa:54:00:ea:33:ad"
             bootMode: "UEFI"
@@ -95,7 +96,7 @@ stringData:
           - name: "worker06"
             bmcuser: "admin"
             bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.6:8000/redfish/v1/Systems/ocpxe-worker06"
+            bmcurl: "redfish-virtualmedia://192.168.7.4:8000/redfish/v1/Systems/ocpxe-worker06"
             rootDevice: "/dev/vda"
             bootMACAddress: "aa:54:00:ea:33:b5"
             bootMode: "UEFI"
@@ -105,7 +106,7 @@ stringData:
           - name: "worker07"
             bmcuser: "admin"
             bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.6:8000/redfish/v1/Systems/ocpxe-worker07"
+            bmcurl: "redfish-virtualmedia://192.168.7.9:8000/redfish/v1/Systems/ocpxe-worker07"
             rootDevice: "/dev/vda"
             bootMACAddress: "aa:54:00:ea:33:b6"
             bootMode: "UEFI"
@@ -115,7 +116,7 @@ stringData:
           - name: "worker08"
             bmcuser: "admin"
             bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.6:8000/redfish/v1/Systems/ocpxe-worker08"
+            bmcurl: "redfish-virtualmedia://192.168.7.3:8000/redfish/v1/Systems/ocpxe-worker08"
             rootDevice: "/dev/vda"
             bootMACAddress: "aa:54:00:ea:33:b7"
             bootMode: "UEFI"

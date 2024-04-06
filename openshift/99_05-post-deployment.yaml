@@ -17,6 +17,8 @@ spec:
         mountPath: /tmp/post
   restartPolicy: Never
   serviceAccount: ibm-deployment-sa
+  securityContext:
+      runAsUser: 0
   volumes:
     - name: post-deployment-scripts
       secret:
