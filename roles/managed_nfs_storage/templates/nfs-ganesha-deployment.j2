@@ -74,13 +74,13 @@ spec:
           volumeMounts:
             - name: export-volume
               mountPath: /export
-      {% if nfs_on_master == "true" %}
+{% if nfs_on_master == "true" %}
       nodeSelector:
         node-role.kubernetes.io/master: ""
       tolerations:
       - key: node-role.kubernetes.io/master
         operator: Exists
-      {% endif %}
+{% endif %}
       volumes:
         - name: export-volume
           persistentVolumeClaim:
