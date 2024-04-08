@@ -4,3 +4,4 @@
 #lvm_channel: "{{ lookup('env', 'LVM_CHANNEL') | default('stable-4.12', true) }}"
 lvm_cluster: "{{ lookup('env', 'LVM_CLUSTER') | default('ocp-lvmcluster', true) }}"
 lvm_paths: "/dev/vdb"
+lvm_include_master: "false"

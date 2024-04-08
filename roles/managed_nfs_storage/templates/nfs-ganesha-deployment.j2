@@ -18,12 +18,6 @@ spec:
         app: nfs-provisioner
     spec:
       serviceAccount: nfs-provisioner
-      nodeSelector:
-        node-role.kubernetes.io/master: ''
-      tolerations:
-        - key: node-role.kubernetes.io/master
-          operator: Exists
-          effect: NoSchedule
       containers:
         - name: nfs-provisioner
           image: registry.k8s.io/sig-storage/nfs-provisioner:v4.0.8
@@ -80,6 +74,13 @@ spec:
           volumeMounts:
             - name: export-volume
               mountPath: /export
+      {% if nfs_on_master == "true" %}
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+      {% endif %}
       volumes:
         - name: export-volume
           persistentVolumeClaim:

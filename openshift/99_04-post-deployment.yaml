@@ -12,6 +12,13 @@ stringData:
       gather_facts: no
       hosts: localhost
       vars:
+        lvm_paths: "/dev/disk/by-diskseq/2"
+        lvm_include_master: "true"
+        odf_mcg_only: "true"
+        odf_mcg_storageclass: "lvms-vg1"
+        nfs_on_master: "true"
+        nfs_ganesha_storageclass: "lvms-vg1"
+        nfs_ganesha_size: "500Gi"
         bmh_nodes:
           - name: "master01"
             bmcuser: "admin"
@@ -126,6 +133,11 @@ stringData:
 
       roles:
       - ibmce.ocp_ansible.add_bmh_workers
+      - ibmce.ocp_ansible.lvm_storage
+      - ibmce.ocp_ansible.managed_nfs_storage
+      - ibmce.ocp_ansible.image_registry
+      - ibmce.ocp_ansible.gpu
+      - ibmce.ocp_ansible.odf_storage
 metadata:
   name: post-deployment-scripts
   namespace: ibm-post-deployment

@@ -14,7 +14,9 @@ spec:
           name: thin-pool-1
           overprovisionRatio: 10
         name: vg1
+  {% if lvm_include_master == "true" %}
   tolerations:
     - effect: NoSchedule
       key: node-role.kubernetes.io/master
       operator: Exists
+  {% endif %}

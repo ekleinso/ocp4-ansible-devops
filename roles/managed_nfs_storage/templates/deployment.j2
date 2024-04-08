@@ -33,11 +33,13 @@ spec:
               value: "{{ nfs_server }}"
             - name: NFS_PATH
               value: "{{ nfs_path }}"
+      {% if nfs_on_master == "true" %}
       nodeSelector:
         node-role.kubernetes.io/master: ""
       tolerations:
       - key: node-role.kubernetes.io/master
         operator: Exists
+      {% endif %}
       volumes:
         - name: nfs-client-root
           nfs:

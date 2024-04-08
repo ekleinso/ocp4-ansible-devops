@@ -9,5 +9,7 @@ nfs_default_sc: "{{ lookup('env', 'NFS_DEFAULT_SC') | default('false', true) }}"
 
 nfs_server: "{{ lookup('env', 'NFS_SERVER') | default('', true) }}"
 nfs_path: "{{ lookup('env', 'NFS_PATH') | default('', true) }}"
+nfs_on_master: "false"
 
 nfs_ganesha_storageclass: "{{ lookup('env', 'NFS_GANESHA_STORAGECLASS') | default('', true) }}"
+nfs_ganesha_size: "{{ lookup('env', 'NFS_GANESHA_SIZE') | default('100Gi', true) }}"

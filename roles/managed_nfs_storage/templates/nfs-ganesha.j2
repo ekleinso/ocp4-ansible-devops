@@ -196,5 +196,5 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 400Gi
+      storage: {{ nfs_ganesha_size }}
   storageClassName: {{ nfs_ganesha_storageclass }}
