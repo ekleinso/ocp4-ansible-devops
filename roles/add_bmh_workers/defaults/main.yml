@@ -10,3 +10,4 @@ bmh_nodes:
     online: true
     region: "us-east-1"
     zone: "us-east-1a"
+    role: "worker"

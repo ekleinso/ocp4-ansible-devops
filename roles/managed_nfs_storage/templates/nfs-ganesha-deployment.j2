@@ -80,6 +80,12 @@ spec:
       tolerations:
       - key: node-role.kubernetes.io/master
         operator: Exists
+{% else %}
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Exists
 {% endif %}
       volumes:
         - name: export-volume

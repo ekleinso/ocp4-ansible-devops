@@ -10,3 +10,7 @@ admin_acks:
     value: "true"
   - name: "ack-4.12-kube-1.26-api-removals-in-4.13"
     value: "true"
+  - name: "ack-4.13-kube-1.27-api-removals-in-4.14"
+    value: "true"
+  - name: "ack-4.14-kube-1.28-api-removals-in-4.15"
+    value: "true"

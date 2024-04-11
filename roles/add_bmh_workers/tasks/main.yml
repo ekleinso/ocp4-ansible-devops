@@ -20,6 +20,8 @@
       metadata:
         name: "{{ item.name }}"
         namespace: openshift-machine-api
+        labels:
+          node-role: "{{ item.role }}"
       spec:
         automatedCleaningMode: metadata
         bmc:
