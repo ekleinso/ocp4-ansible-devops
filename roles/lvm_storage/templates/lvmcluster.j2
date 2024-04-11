@@ -18,8 +18,8 @@ spec:
     - effect: NoSchedule
       key: node-role.kubernetes.io/infra
       operator: Exists
-  {% if lvm_include_master == "true" %}
+    {% if lvm_include_master == "true" %}
     - effect: NoSchedule
       key: node-role.kubernetes.io/master
       operator: Exists
-  {% endif %}
+    {% endif %}

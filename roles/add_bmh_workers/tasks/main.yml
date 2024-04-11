@@ -86,7 +86,7 @@
       apiVersion: machine.openshift.io/v1beta1
       kind: MachineSet
       metadata:
-        name: "{{ machineset.resources[0].metadata.name }}"
+        name: "{{ machineset.resources[1].metadata.name }}"
         namespace: openshift-machine-api
       spec:
         replicas: 8

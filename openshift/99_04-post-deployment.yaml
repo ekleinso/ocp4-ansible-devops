@@ -12,7 +12,7 @@ stringData:
       gather_facts: no
       hosts: localhost
       vars:
-        lvm_paths: "/dev/disk/by-diskseq/2"
+        lvm_paths: "/dev/vdb"
         lvm_include_master: "true"
         odf_mcg_only: "true"
         odf_mcg_storageclass: "lvms-vg1"
@@ -30,6 +30,7 @@ stringData:
             online: true
             region: "kdc"
             zone: "esx01"
+            role: "master"
           - name: "master02"
             bmcuser: "admin"
             bmcpassword: "password"
@@ -40,6 +41,7 @@ stringData:
             online: true
             region: "kdc"
             zone: "esx01"  
+            role: "master"
           - name: "master03"
             bmcuser: "admin"
             bmcpassword: "password"
@@ -50,6 +52,29 @@ stringData:
             online: true
             region: "kdc"
             zone: "esx01"  
+            role: "master"
+          - name: "infra01"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.8:8000/redfish/v1/Systems/ocpxe-infra01"
+            rootDevice: "/dev/vda"
+            bootMACAddress: "aa:54:00:ea:33:ae"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "tron"  
+            role: "infra"
+          - name: "infra02"
+            bmcuser: "admin"
+            bmcpassword: "password"
+            bmcurl: "redfish-virtualmedia://192.168.7.7:8000/redfish/v1/Systems/ocpxe-infra02"
+            rootDevice: "/dev/vda"
+            bootMACAddress: "aa:54:00:ea:33:af"
+            bootMode: "UEFI"
+            online: true
+            region: "kdc"
+            zone: "tron"  
+            role: "infra"
           - name: "worker01"
             bmcuser: "admin"
             bmcpassword: "password"
@@ -60,6 +85,7 @@ stringData:
             online: true
             region: "kdc"
             zone: "ziggy"
+            role: "worker"
           - name: "worker02"
             bmcuser: "admin"
             bmcpassword: "password"
@@ -70,6 +96,7 @@ stringData:
             online: true
             region: "kdc"
             zone: "ziggy"
+            role: "worker"
           - name: "worker03"
             bmcuser: "admin"
             bmcpassword: "password"
@@ -80,6 +107,7 @@ stringData:
             online: true
             region: "kdc"
             zone: "ziggy"
+            role: "worker"
           - name: "worker04"
             bmcuser: "admin"
             bmcpassword: "password"
@@ -90,6 +118,7 @@ stringData:
             online: true
             region: "kdc"
             zone: "ziggy"
+            role: "worker"
           - name: "worker05"
             bmcuser: "admin"
             bmcpassword: "password"
@@ -100,6 +129,7 @@ stringData:
             online: true
             region: "kdc"
             zone: "ultron"
+            role: "worker"
           - name: "worker06"
             bmcuser: "admin"
             bmcpassword: "password"
@@ -110,6 +140,7 @@ stringData:
             online: true
             region: "kdc"
             zone: "viki"
+            role: "worker"
           - name: "worker07"
             bmcuser: "admin"
             bmcpassword: "password"
@@ -120,6 +151,7 @@ stringData:
             online: true
             region: "kdc"
             zone: "jarvis"
+            role: "worker"
           - name: "worker08"
             bmcuser: "admin"
             bmcpassword: "password"
@@ -130,6 +162,7 @@ stringData:
             online: true
             region: "kdc"
             zone: "hal"
+            role: "worker"
 
       roles:
       - ibmce.ocp_ansible.add_bmh_workers
