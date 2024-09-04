@@ -88,6 +88,32 @@
     - reg_imagecfg['resources'][0]['spec']['storage']['emptyDir'] is defined
 ###############################################################################
 
+# Move the default Image Registry to the infra nodes
+#- name: Gather infra Nodes
+#  k8s_info:
+#    kind: Node
+#    label_selectors:
+#      - "node-role.kubernetes.io/infra"
+#  register: ocp_infra_nodes
+  
+#- name: Move the Image Registry to the Infra Nodes
+#  kubernetes.core.k8s_json_patch:
+#    api_version: imageregistry.operator.openshift.io/v1
+#    kind: Config
+#    name: cluster
+#    namespace: openshift-ingress-operator
+#    patch:
+#      - op: add
+#        path: /spec/nodeSelector
+#        value: {"node-role.kubernetes.io/infra":""}
+#      - op: add
+#        path: /spec/tolerations
+#        value: [{"key":"node-role.kubernetes.io/infra","operator":"Exists"}]
+#  when:
+#    - ocp_infra_nodes.resources
+#    - reg_imagecfg.resources[0].spec.nodeSelector is not defined
+#    - reg_imagecfg.resources[0].spec.tolerations is not defined
+
 ###############################################################################
 # NOTE: This attribute was introduced in OCP 4.3
 ###############################################################################

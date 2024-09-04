@@ -1,6 +1,6 @@
 galaxy_info:
   author: Eric Kleinsorgen
-  description: Configure OpenShift Cluster Monitoring
+  description: Configure Red Hat OpenShift AI
   company: IBM
 
   license: EPL-2.0
@@ -19,7 +19,7 @@ galaxy_info:
     - ibmce
     - ansible
     - ocp
-    - cluster-monitoring
+    - rhodsc
 
 dependencies: []
   # List your role dependencies here, one per line. Be sure to remove the '[]' above,

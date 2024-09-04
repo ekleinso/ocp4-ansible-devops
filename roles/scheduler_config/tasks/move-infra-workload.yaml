@@ -6,7 +6,7 @@
       - "node-role.kubernetes.io/infra"
   register: ocp_infra_nodes
 
-- name: Search for defaul Ingress Controller
+- name: Search for default Ingress Controller
   k8s_info:
     kind: IngressController
     name: default
@@ -15,7 +15,8 @@
 
 - set_fact:
     ingress_patch:
-    - '{"nodePlacement":{"nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":""}'
+    - '{"nodePlacement":{"nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":""},'
+    - '{"tolerations":[{"key":"node-role.kubernetes.io/infra","operator":"Exists"}]}'
     - '}'
     - '}'
     - '}'
@@ -28,8 +29,11 @@
     namespace: openshift-ingress-operator
     patch:
       - op: add
-        path: /spec
-        value: "{{ ingress_patch | join('') }}"
+        path: /spec/nodePlacement
+        value: {"nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":""}}}
+      - op: add
+        path: /spec/nodePlacement/tolerations
+        value: [{"key":"node-role.kubernetes.io/infra","operator":"Exists"}]
   when:
     - ocp_infra_nodes.resources
     - reg_ocp_ingresscontroller.resources[0].spec.nodePlacement.nodeSelector.matchLabels["node-role.kubernetes.io/infra"] is not defined

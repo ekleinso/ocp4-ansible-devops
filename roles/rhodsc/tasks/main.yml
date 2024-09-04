@@ -1,0 +1,6 @@
+---
+# tasks file for Red Hat OpenShift AI
+
+- include_tasks: operator.yml
+- include_tasks: dsci.yml
+- include_tasks: configure.yml

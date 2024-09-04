@@ -1,9 +1,23 @@
 ---
 # tasks file for cluster-monitoring
 
-- name: Create ConfigMap for openshift-monitoring
+- name: Gather infra Nodes
+  k8s_info:
+    kind: Node
+    label_selectors:
+      - "node-role.kubernetes.io/infra"
+  register: ocp_infra_nodes
+
+- name: Create ConfigMap for openshift-monitoring move to infra nodes
   k8s:
     state: present
     definition: "{{ lookup('template', 'cluster-monitoring-config.j2') }}"
+  when:
+    - ocp_infra_nodes.resources
 
-
+- name: Create ConfigMap for openshift-monitoring storage only
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'cluster-monitoring-config-storage.j2') }}"
+  when:
+    - not ocp_infra_nodes.resources

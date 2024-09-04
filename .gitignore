@@ -1,3 +1,5 @@
 kdc.yml
 kdc_gpu.yml
 test.yml
+portworx.yml
+kdc_nfs.yml

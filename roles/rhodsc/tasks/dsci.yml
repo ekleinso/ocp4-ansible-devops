@@ -1,0 +1,36 @@
+- name: Initialize Data Science Cluster 
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'dsci.j2') }}"
+
+- name: Wait for Data Science Cluster to initialize
+  k8s_info:
+    api_version: dscinitialization.opendatahub.io/v1
+    kind: dscinitialization
+    name: default-dsci
+    wait: yes
+    wait_sleep: 10
+    wait_timeout: 360
+  register: reg_dsci_status
+  until: reg_dsci_status.resources[0].status.phase is defined and reg_dsci_status.resources[0].status.phase == "Ready"  
+  retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
+  delay: 30
+
+- name: Create Data Science Cluster 
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'DataScienceCluster.j2') }}"
+
+- name: Wait for Data Science Cluster Instance to be ready
+  k8s_info:
+    api_version: v1
+    kind: Pod
+    label_selectors:
+      - control-plane = kserve-controller-manager
+    wait: yes
+    wait_sleep: 10
+    wait_timeout: 360
+  register: reg_dsc_status
+  until: reg_dsc_status.resources[0].status.phase is defined and reg_dsc_status.resources[0].status.phase == "Running" 
+  retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
+  delay: 30

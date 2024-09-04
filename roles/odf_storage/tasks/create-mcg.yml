@@ -9,3 +9,31 @@
     wait_condition:
       type: Available
       status: "True"
+
+- name: Wait for nooba backing store
+  k8s_info:
+    api_version: noobaa.io/v1alpha1
+    kind: BackingStore
+    namespace: openshift-storage
+    name: noobaa-default-backing-store
+    wait: yes
+    wait_sleep: 10
+    wait_timeout: 360
+  register: reg_nooba_status
+  until: reg_nooba_status.resources[0].status.phase is defined and reg_nooba_status.resources[0].status.phase == "Ready" 
+  retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
+  delay: 30
+
+- name: Patch resources for backing store
+  kubernetes.core.k8s_json_patch:
+    api_version: noobaa.io/v1alpha1
+    kind: BackingStore
+    namespace: openshift-storage
+    name: noobaa-default-backing-store
+    patch:
+      - op: add
+        path: /spec/pvPool/resources/limits
+        value: {"cpu":"1000m","memory":"4000Mi"}
+  when:
+    - reg_nooba_status.resources[0].status.phase is defined
+    - reg_nooba_status.resources[0].status.phase == "Ready"

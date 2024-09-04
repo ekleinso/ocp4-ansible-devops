@@ -11,7 +11,7 @@
           workload: "infra"
       spec:
         taints:
-        - effect: "PreferNoSchedule"
+        - effect: "NoSchedule"
           key: "node-role.kubernetes.io/infra"
   when:
     - item.metadata.name is search("infra")

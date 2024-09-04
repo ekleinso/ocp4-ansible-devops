@@ -12,6 +12,40 @@
         username: "{{ item.bmcuser | b64encode }}"
   loop: "{{ bmh_nodes }}"
 
+- name: Create nmstate secret
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ item.name }}-nmstate"
+        namespace: openshift-machine-api
+      stringData:
+        nmstate: |
+          hostname:
+            running: "{{ item.name }}"
+            config: "{{ item.name }}"
+          interfaces:
+          - name: "{{ item.interface }}"
+            type: ethernet
+            state: up
+            ipv4:
+              address:
+              - ip: "{{ item.address.split("/")[0] }}"
+                prefix-length: "{{ item.address.split("/")[1] }}"
+              enabled: true
+          dns-resolver:
+            config:
+              server:
+              - "{{ item.dns }}"
+          routes:
+            config:
+              - destination: 0.0.0.0/0
+                next-hop-address: "{{ item.gateway }}"
+                next-hop-interface: "{{ item.interface }}"
+                table-id: 254
+  loop: "{{ bmh_nodes }}"
+
 - name: Configure BareMetalHost
   k8s:
     definition:
@@ -21,7 +55,7 @@
         name: "{{ item.name }}"
         namespace: openshift-machine-api
         labels:
-          node-role: "{{ item.role }}"
+          bmhSelector: "{{ item.zone }}"
       spec:
         automatedCleaningMode: metadata
         bmc:
@@ -33,20 +67,8 @@
         online: "{{ item.online }}"
         rootDeviceHints: 
           deviceName: "{{ item.rootDevice }}"
+        preprovisioningNetworkDataName: "{{ item.name }}-nmstate"
   loop: "{{ bmh_nodes }}"
-
-#- name: Wait for BareMetalHost to start inspection
-#  k8s_info:
-#    api_version: metal3.io/v1alpha1
-#    kind: BareMetalHost
-#    name: "{{ item.name }}"
-#    namespace: openshift-machine-api
-#  register: bmh
-#  until: bmh.resources[0].status.provisioning.state == "inspecting"
-#  retries: 30
-#  delay: 10
-#  when: bmh.resources[0].status.provisioning.state not in ["available", "unmanaged", "externally provisioned"]
-#  loop: "{{ bmh_nodes }}"
 
 - name: Wait for BareMetalHost to be Ready
   k8s_info:
@@ -79,40 +101,112 @@
     kind: MachineSet
     namespace: openshift-machine-api
   register: machineset
+  
+- set_fact:
+    ocp_zones: "{{ bmh_nodes | map(attribute='zone') | list | unique | reject('search', bmh_nodes.0.zone ) | reject('search', bmh_nodes.3.zone ) }}"
 
-- name: Set MachineSet Replicas
+- name: Display Zones
+  debug:
+    var: ocp_zones
+
+- set_fact:
+    cluster_api: "{{ machineset.resources[0].metadata.name.split('-') }}"
+
+- set_fact:
+    api_cluster: "{{ cluster_api[0:2] | join('-') }}"
+
+- name: Create new MachineSet
   k8s:
-    definition:
-      apiVersion: machine.openshift.io/v1beta1
-      kind: MachineSet
-      metadata:
-        name: "{{ machineset.resources[1].metadata.name }}"
-        namespace: openshift-machine-api
-      spec:
-        replicas: 8
+    state: present
+    definition: "{{ lookup('template', 'machineset.j2') }}"
+  loop: "{{ ocp_zones }}"
 
-- name: Wait for Nodes to be Ready
-  k8s_info:
-    api_version: v1
-    kind: Node
-    name: "{{ item.name }}"
-    wait: true
-    wait_sleep: 10
-    wait_timeout: 600
-    wait_condition:
-      type: Ready
-      status: "True"
-  loop: "{{ bmh_nodes }}"
+#- name: Create Cluster Autoscaler
+#  k8s:
+#    definition:
+#      apiVersion: autoscaling.openshift.io/v1
+#      kind: ClusterAutoscaler
+#      metadata:
+#        name: default
+#      spec:
+#        balanceSimilarNodeGroups: true
+#        podPriorityThreshold: -10
+#        resourceLimits:
+#          maxNodesTotal: 12
+#          cores:
+#            min: 48
+#            max: 104
+#          memory:
+#            min: 224
+#            max: 464
+#          gpus:
+#            - type: nvidia.com/gpu 
+#              min: 0 
+#              max: 1
+#        scaleDown:
+#          enabled: true
+#          delayAfterAdd: 5m
+#          delayAfterDelete: 5m
+#          delayAfterFailure: 5m
+#          unneededTime: 60s
 
-- name: add label to nodes
-  kubernetes.core.k8s:
-    state: patched
-    api_version: v1
-    kind: Node
-    name: "{{ item.name }}"
-    definition:
-      metadata:
-        labels:
-          topology.kubernetes.io/region: "{{ item.region }}"
-          topology.kubernetes.io/zone: "{{ item.zone }}"
-  loop: "{{ bmh_nodes }}"
+#- name: Get MachineSets
+#  k8s_info:
+#    api_version: machine.openshift.io/v1beta1
+#    kind: MachineSet
+#    namespace: openshift-machine-api
+#  register: machinesets
+
+#- name: Create Machine Autoscaler
+#  k8s:
+#    definition:
+#      apiVersion: autoscaling.openshift.io/v1beta1
+#      kind: MachineAutoscaler
+#      metadata:
+#        name: "{{ item.metadata.name }}"
+#        namespace: openshift-machine-api
+#      spec:
+#        maxReplicas: 4
+#        minReplicas: 1
+#        scaleTargetRef:
+#          apiVersion: machine.openshift.io/v1beta1
+#          kind: MachineSet
+#          name: "{{ item.metadata.name }}"
+#  loop: "{{ machinesets.resources }}"
+
+#- name: Set MachineSet Replicas
+#  k8s:
+#    definition:
+#      apiVersion: machine.openshift.io/v1beta1
+#      kind: MachineSet
+#      metadata:
+#        name: "{{ api_cluster }}-worker-{{ item }}"
+#        namespace: openshift-machine-api
+#      spec:
+#       replicas: 1
+#  loop: "{{ ocp_zones }}"
+
+#- name: Wait for MachineSets to be Ready
+#  k8s_info:
+#    api_version: machine.openshift.io/v1beta1
+#    kind: MachineSet
+#    name: "{{ api_cluster }}-worker-{{ item }}"
+#    namespace: openshift-machine-api
+#  register: machineset_chk
+#  until: machineset_chk.resources[0].status.readyReplicas is defined and machineset_chk.resources[0].status.readyReplicas == machineset_chk.resources[0].spec.replicas
+#  retries: 30
+#  delay: 30
+#  loop: "{{ ocp_zones }}"
+
+#- name: add label to nodes
+#  kubernetes.core.k8s:
+#    state: patched
+#    api_version: v1
+#    kind: Node
+#    name: "{{ item.name }}"
+#    definition:
+#      metadata:
+#        labels:
+#          topology.kubernetes.io/region: "{{ item.region }}"
+#          topology.kubernetes.io/zone: "{{ item.zone }}"
+#  loop: "{{ bmh_nodes }}"

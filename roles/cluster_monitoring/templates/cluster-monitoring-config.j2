@@ -6,44 +6,71 @@ metadata:
 data:
   config.yaml: |
     prometheusOperator:
-      baseImage: quay.io/coreos/prometheus-operator
-      prometheusConfigReloaderBaseImage: quay.io/coreos/prometheus-config-reloader
-      configReloaderBaseImage: quay.io/coreos/configmap-reload
       nodeSelector:
         node-role.kubernetes.io/infra: ""
+      tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Exists
     prometheusK8s:
-      retention: {{ PROMETHEUS_RETENTION_PERIOD }}
+      retention: {{ prometheus_retention_period }}
+      retentionSize: {{ prometheus_retention_size }}
       baseImage: openshift/prometheus
       nodeSelector:
         node-role.kubernetes.io/infra: ""
+      tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Exists
       volumeClaimTemplate:
         spec:
+          storageClassName: {{ prometheus_storage_class }}
           resources:
             requests:
-              storage: {{ PROMETHEUS_STORAGE_SIZE }}
+              storage: {{ prometheus_storage_size }}
     alertmanagerMain:
       baseImage: openshift/prometheus-alertmanager
       nodeSelector:
         node-role.kubernetes.io/infra: ""
+      tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Exists
       volumeClaimTemplate:
         spec:
+          storageClassName: {{ prometheus_storage_class }}
           resources:
             requests:
-              storage: {{ ALERTMANAGER_STORAGE_SIZE }}
-    nodeExporter:
-      baseImage: openshift/prometheus-node-exporter
-    kubeRbacProxy:
-      baseImage: quay.io/coreos/kube-rbac-proxy
+              storage: {{ alertmanager_storage_size }}
     kubeStateMetrics:
-      baseImage: quay.io/coreos/kube-state-metrics
       nodeSelector:
         node-role.kubernetes.io/infra: ""
+      tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Exists
     grafana:
-      baseImage: grafana/grafana
       nodeSelector:
         node-role.kubernetes.io/infra: ""
-    auth:
-      baseImage: openshift/oauth-proxy
+      tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Exists
+    telemeterClient:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      tolerations:
+      - key: node-role.kubernetes.io/infra
     k8sPrometheusAdapter:
       nodeSelector:
         node-role.kubernetes.io/infra: ""
+      tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Exists
+    openshiftStateMetrics:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Exists
+    thanosQuerier:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Exists

@@ -83,6 +83,7 @@ spec:
 {% else %}
       nodeSelector:
         node-role.kubernetes.io/infra: ""
+        kubernetes.io/hostname: infra02
       tolerations:
       - key: node-role.kubernetes.io/infra
         operator: Exists

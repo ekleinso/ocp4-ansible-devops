@@ -1,0 +1,46 @@
+- name: get config for Red Hat OpenShift AI
+  k8s_info:
+    api_version: v1
+    kind: ConfigMap
+    name: inferenceservice-config
+    namespace: redhat-ods-applications
+  register: reg_inferenceservice
+
+- name: Get storageInitializer fact
+  ansible.builtin.set_fact:
+    storageInitializer: "{{ reg_inferenceservice.resources[0].data.storageInitializer }}"
+
+- name: Update the storageInitializer fact
+  ansible.utils.update_fact:
+    updates:
+      - path: storageInitializer.enableDirectPvcVolumeMount
+        value: true
+  register: new_storageInitializer
+
+- name: Get ingress fact
+  ansible.builtin.set_fact:
+    ingress: "{{ reg_inferenceservice.resources[0].data.ingress }}"
+
+- name: Update the ingress fact
+  ansible.utils.update_fact:
+    updates:
+      - path: ingress.domainTemplate
+        value: "example.com"
+  register: new_ingress
+
+- name: Configure Red Hat OpenShift AI for Cloud Pak for Data
+  kubernetes.core.k8s_json_patch:
+    api_version: v1
+    kind: ConfigMap
+    name: inferenceservice-config
+    namespace: redhat-ods-applications
+    patch:
+      - op: add
+        path: /metadata/annotations/opendatahub.io~1managed
+        value: "false"
+      - op: add
+        path: /data/storageInitializer
+        value: "{{ new_storageInitializer.storageInitializer | to_nice_json }}"
+      - op: add
+        path: /data/ingress
+        value: "{{ new_ingress.ingress | to_nice_json }}"

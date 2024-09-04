@@ -1,0 +1,4 @@
+---
+# defaults file for rhodsc
+
+rhodsc_channel: "{{ lookup('env', 'RHODSC_CHANNEL') | default('eus-2.8', true) }}"

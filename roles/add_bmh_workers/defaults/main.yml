@@ -1,4 +1,5 @@
 ---
+bmh_region: "us-east-1"
 bmh_nodes:
   - name: "worker03"
     bmcuser: "admin"
@@ -8,6 +9,4 @@ bmh_nodes:
     bootMACAddress: "aa:54:00:ea:33:b2"
     bootMode: "UEFI"
     online: true
-    region: "us-east-1"
     zone: "us-east-1a"
-    role: "worker"

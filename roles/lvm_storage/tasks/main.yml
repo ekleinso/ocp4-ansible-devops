@@ -40,11 +40,17 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'lvmcluster.j2') }}"
+
+- name: Wait for LVM Cluster to be Ready
+  k8s_info:
+    api_version: lvm.topolvm.io/v1alpha1
+    kind: LVMCluster
+    namespace: openshift-storage
+    name: "{{ lvm_cluster }}"
     wait: yes
     wait_sleep: 10
     wait_timeout: 360
   register: lvmcluster_status
-  until: 
-    - lvmcluster_status.result.status.state == "Ready" 
+  until: lvmcluster_status.resources[0].status.state is defined and lvmcluster_status.resources[0].status.state == "Ready"
   retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
-  delay: 30  
+  delay: 30
