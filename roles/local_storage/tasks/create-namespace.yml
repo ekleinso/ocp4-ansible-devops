@@ -1,0 +1,4 @@
+- name: Prepare Red Hat OpenShift Data Foundation environment
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'namespace.j2') }}"

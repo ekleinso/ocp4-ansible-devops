@@ -1,0 +1,26 @@
+
+- name: Create OperatorGroup openshift-storage-operatorgroup
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'OperatorGroup.j2') }}"
+
+- name: Create Subscription for ocs
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'subscription.j2') }}"
+  register: reg_local_sub
+
+- name: Wait for subscriptions to be installed
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    namespace: openshift-local-storage
+    label_selectors:
+      - operators.coreos.com/local-storage-operator.openshift-local-storage
+    wait: yes
+    wait_sleep: 10
+    wait_timeout: 360
+  register: reg_csv_status
+  until: reg_csv_status.resources[0].status.phase is defined and reg_csv_status.resources[0].status.phase == "Succeeded" 
+  retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
+  delay: 30

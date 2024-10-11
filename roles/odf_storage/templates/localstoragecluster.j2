@@ -4,18 +4,8 @@ metadata:
   name: ocs-storagecluster
   namespace: openshift-storage
 spec:
-  manageNodes: false
-  monPVCTemplate:
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      resources:
-        requests:
-          storage: 1
-      storageClassName: "{{ odf_storageclass }}"
-      volumeMode: Filesystem
   storageDeviceSets:
-  - count: 1
+  - count: 3
     dataPVCTemplate:
       spec:
         accessModes:
@@ -25,8 +15,10 @@ spec:
             storage: 1
         storageClassName: "{{ odf_storageclass }}"
         volumeMode: Block
-    name: ocs-deviceset
+    name: "ocs-deviceset-{{ odf_storageclass }}"
     placement: {}
     portable: false
-    replica: 3
+    replica: 1
     resources: {}
+  monDataDirHostPath: /var/lib/rook
+  flexibleScaling: true

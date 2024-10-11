@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Secret
 stringData:
   runner.sh: |
-    pip3 install openshift pyyaml kubernetes
+    pip3 install openshift pyyaml kubernetes passlib
     ansible-galaxy collection install git+https://github.com/ekleinso/ocp4-ansible-devops.git
     ansible-playbook post-deploy-playbook.yaml
   post-deploy-playbook.yaml: |

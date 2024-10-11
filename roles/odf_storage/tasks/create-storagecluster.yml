@@ -1,10 +1,19 @@
-
 - name: Create the StorageCluster object
   k8s:
     state: present
     definition: "{{ lookup('template', 'storagecluster.j2') }}"
   register: reg_storagecluster
-  until: 
-    - reg_storagecluster.result.status.state == "Ready" 
+  until: reg_storagecluster.result.status.phase is defined and reg_storagecluster.result.status.phase == "Ready"
   retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
-  delay: 30    
+  delay: 30
+  when: odf_use_local_storage == "false"
+
+- name: Create the StorageCluster object
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'localstoragecluster.j2') }}"
+  register: reg_storagecluster
+  until: reg_storagecluster.result.status.phase is defined and reg_storagecluster.result.status.phase == "Ready"
+  retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
+  delay: 30
+  when: odf_use_local_storage == "true"

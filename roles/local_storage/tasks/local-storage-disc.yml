@@ -1,0 +1,43 @@
+- name: Gather all the Nodes
+  k8s_info:
+    kind: Node
+  register: ocp_nodes
+
+- name: Add storage role to the nodes that have storage in it's name
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Node
+      metadata:
+        name: "{{ item.metadata.name }}"
+        labels:
+          node-role.kubernetes.io/storage: ""
+          workload: "storage"
+      spec:
+        taints:
+        - effect: "NoSchedule"
+          key: "node.ocs.openshift.io/storage"
+          value: "true"
+  when:
+    - item.metadata.name is search("storage")
+    - item["metadata"]["labels"]["node-role.kubernetes.io/storage"] is not defined or
+      item["metadata"]["labels"]["workload"] is not defined or
+      item["spec"]["taints"] is not defined
+  loop_control:
+    label: "{{ item.metadata.name }}"
+  loop: "{{ ocp_nodes.resources }}"
+
+- name: Create the LocalVolumeDiscovery object
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'localvolumediscovery.j2') }}"
+
+- name: Create the LocalVolumeSet object
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'localvolumeset.j2') }}"
+  register: reg_localvolumeset
+  until: reg_localvolumeset.result.status.totalProvisionedDeviceCount is defined and reg_localvolumeset.result.status.totalProvisionedDeviceCount >= 3
+  retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
+  delay: 30

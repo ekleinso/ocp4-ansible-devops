@@ -1,0 +1,7 @@
+---
+
+- include_tasks: create-namespace.yml
+
+- include_tasks: setup-subscriptions.yml
+
+- include_tasks: local-storage-disc.yml
