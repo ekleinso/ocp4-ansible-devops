@@ -5,4 +5,4 @@
 - include_tasks: nvidia-gpu.yml
 - include_tasks: nvidia-gpu-plugin.yml
 - include_tasks: nvidia-gpu-timeslicing.yml
-  when: gpu_enable_timeslicing == "true"
+  when: gpu_timeslicing_enable == "true"
