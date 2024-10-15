@@ -12,165 +12,30 @@ stringData:
       gather_facts: no
       hosts: localhost
       vars:
-        lvm_paths: "/dev/vdb"
-        lvm_include_master: "true"
-        odf_mcg_only: "true"
-        odf_mcg_storageclass: "lvms-vg1"
+        users:
+        - name: "ibmce"
+          password: "Passw0rd"
+        nfs_server: "192.168.7.66"
+        nfs_path: "/nas/share"
         nfs_on_master: "true"
-        nfs_ganesha_storageclass: "lvms-vg1"
-        nfs_ganesha_size: "500Gi"
-        bmh_nodes:
-          - name: "master01"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "ipmi://192.168.7.65:6171"
-            rootDevice: "/dev/sda"
-            bootMACAddress: "aa:54:00:ea:33:ab"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "esx01"
-            role: "master"
-          - name: "master02"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "ipmi://192.168.7.65:6172"
-            rootDevice: "/dev/sda"
-            bootMACAddress: "aa:54:00:ea:33:ac"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "esx01"  
-            role: "master"
-          - name: "master03"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "ipmi://192.168.7.65:6173"
-            rootDevice: "/dev/sda"
-            bootMACAddress: "aa:54:00:ea:33:ad"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "esx01"  
-            role: "master"
-          - name: "infra01"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.8:8000/redfish/v1/Systems/ocpxe-infra01"
-            rootDevice: "/dev/vda"
-            bootMACAddress: "aa:54:00:ea:33:ae"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "tron"  
-            role: "infra"
-          - name: "infra02"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.7:8000/redfish/v1/Systems/ocpxe-infra02"
-            rootDevice: "/dev/vda"
-            bootMACAddress: "aa:54:00:ea:33:af"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "tron"  
-            role: "infra"
-          - name: "worker01"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.13:8000/redfish/v1/Systems/ocpxe-worker01"
-            rootDevice: "/dev/vda"
-            bootMACAddress: "aa:54:00:ea:33:b0"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "ziggy"
-            role: "worker"
-          - name: "worker02"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.13:8000/redfish/v1/Systems/ocpxe-worker02"
-            rootDevice: "/dev/vda"
-            bootMACAddress: "aa:54:00:ea:33:b1"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "ziggy"
-            role: "worker"
-          - name: "worker03"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.13:8000/redfish/v1/Systems/ocpxe-worker03"
-            rootDevice: "/dev/vda"
-            bootMACAddress: "aa:54:00:ea:33:b2"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "ziggy"
-            role: "worker"
-          - name: "worker04"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.13:8000/redfish/v1/Systems/ocpxe-worker04"
-            rootDevice: "/dev/vda"
-            bootMACAddress: "aa:54:00:ea:33:b3"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "ziggy"
-            role: "worker"
-          - name: "worker05"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.6:8000/redfish/v1/Systems/ocpxe-worker05"
-            rootDevice: "/dev/vda"
-            bootMACAddress: "aa:54:00:ea:33:b4"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "ultron"
-            role: "worker"
-          - name: "worker06"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.4:8000/redfish/v1/Systems/ocpxe-worker06"
-            rootDevice: "/dev/vda"
-            bootMACAddress: "aa:54:00:ea:33:b5"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "viki"
-            role: "worker"
-          - name: "worker07"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.9:8000/redfish/v1/Systems/ocpxe-worker07"
-            rootDevice: "/dev/vda"
-            bootMACAddress: "aa:54:00:ea:33:b6"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "jarvis"
-            role: "worker"
-          - name: "worker08"
-            bmcuser: "admin"
-            bmcpassword: "password"
-            bmcurl: "redfish-virtualmedia://192.168.7.3:8000/redfish/v1/Systems/ocpxe-worker08"
-            rootDevice: "/dev/vda"
-            bootMACAddress: "aa:54:00:ea:33:b7"
-            bootMode: "UEFI"
-            online: true
-            region: "kdc"
-            zone: "hal"
-            role: "worker"
+        odf_mcg_only: "true"
+        odf_mcg_storageclass: "managed-nfs-storage"
+        prometheus_retention_period: "24h"
+        prometheus_storage_class: "managed-nfs-storage"
+        gpu_timeslicing_enable: "true"
+        gpu_timeslicing_config: "Nvidia-8"
+        rhodsc_channel: "embedded"
 
       roles:
-      - ibmce.ocp_ansible.add_bmh_workers
-      - ibmce.ocp_ansible.lvm_storage
+      - ibmce.ocp_ansible.admin_acks
+      - ibmce.ocp_ansible.catalog_source
+      - ibmce.ocp_ansible.htpasswd
       - ibmce.ocp_ansible.managed_nfs_storage
-      - ibmce.ocp_ansible.image_registry
-      - ibmce.ocp_ansible.gpu
       - ibmce.ocp_ansible.odf_storage
+      - ibmce.ocp_ansible.image_registry
+      - ibmce.ocp_ansible.cluster_monitoring
+      - ibmce.ocp_ansible.gpu
+      - ibmce.ocp_ansible.rhodsc
 metadata:
   name: post-deployment-scripts
   namespace: ibm-post-deployment

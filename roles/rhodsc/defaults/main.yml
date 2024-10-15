@@ -1,4 +1,5 @@
 ---
 # defaults file for rhodsc
-
-rhodsc_channel: "{{ lookup('env', 'RHODSC_CHANNEL') | default('eus-2.8', true) }}"
+# for cp4d < 5.0.3 rhodsc_channel == eus-2.8
+# for cp4d => 5.0.3 rhodsc_channel == embedded
+rhodsc_channel: "{{ lookup('env', 'RHODSC_CHANNEL') | default('embedded', true) }}"

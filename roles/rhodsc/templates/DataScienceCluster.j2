@@ -2,12 +2,14 @@ kind: DataScienceCluster
 apiVersion: datasciencecluster.opendatahub.io/v1
 metadata:
   name: default-dsc
+{% if rhodsc_channel is defined and rhodsc_channel == "eus-2.8" %}
   labels:
     app.kubernetes.io/name: datasciencecluster
     app.kubernetes.io/instance: default-dsc
     app.kubernetes.io/part-of: rhods-operator
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: rhods-operator
+{% endif %}
 spec:
   components:
     codeflare:
@@ -30,3 +32,9 @@ spec:
       managementState: Removed
     workbenches:
       managementState: Removed
+{% if rhodsc_channel is defined and rhodsc_channel == "embedded" %}
+    trainingoperator:
+      managementState: Managed 
+    trustyai:
+      managementState: Removed
+{% endif %}
