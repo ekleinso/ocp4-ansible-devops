@@ -1,0 +1,41 @@
+- name: Apply NVIDIA device-plugin-config
+  k8s:
+    state: present
+    definition: "{{ lookup('file', '{{ item }}') | from_yaml }}"
+  loop:
+    - "device-plugin-config.yaml"
+
+- name: Update ClusterPolicy for time-slicing
+  kubernetes.core.k8s:
+    state: patched
+    api_version: nvidia.com/v1
+    kind: ClusterPolicy
+    name: gpu-cluster-policy
+    definition:
+      spec:
+        devicePlugin:
+          config:
+            name: "device-plugin-config"
+
+- name: Gather all the GPU Nodes
+  k8s_info:
+    kind: Node
+    label_selectors:
+      - feature.node.kubernetes.io/pci-10de.present = true
+  register: ocp_nodes
+
+- name: Label GPU nodes
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Node
+      metadata:
+        name: "{{ item.metadata.name }}"
+        labels:
+          nvidia.com/device-plugin.config: "{{ gpu_timeslicing_config }}"
+  when:
+    - item["metadata"]["labels"]["nvidia.com/device-plugin.config"] is not defined
+  loop_control:
+    label: "{{ item.metadata.name }}"
+  loop: "{{ ocp_nodes.resources }}"

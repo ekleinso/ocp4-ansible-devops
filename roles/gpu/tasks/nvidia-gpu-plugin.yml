@@ -1,0 +1,40 @@
+- name: Apply NVIDIA dcgm exporter dashboard
+  k8s:
+    state: present
+    definition: "{{ lookup('file', '{{ item }}') | from_yaml }}"
+  loop:
+    - "nvidia-dcgm-exporter-dashboard.yaml"
+
+- name: Add rh-ecosystem-edge table chart repo
+  kubernetes.core.helm_repository:
+    name: rh-ecosystem-edge
+    repo_url: "https://rh-ecosystem-edge.github.io/console-plugin-nvidia-gpu"
+
+- name: Deploy console-plugin-nvidia-gpu
+  kubernetes.core.helm:
+    name: console-plugin-nvidia-gpu
+    chart_ref: rh-ecosystem-edge/console-plugin-nvidia-gpu
+    release_namespace: nvidia-gpu-operator
+    update_repo_cache: true
+
+- name: Enable the NVIDIA console plugin
+  kubernetes.core.k8s_json_patch:
+    api_version: operator.openshift.io/v1
+    kind: Console
+    name: cluster
+    patch:
+      - op: add
+        path: /spec/plugins/-
+        value: "console-plugin-nvidia-gpu"
+
+- name: Add DCGM Exporter metrics ConfigMap to ClusterPolicy
+  kubernetes.core.k8s:
+    state: patched
+    api_version: nvidia.com/v1
+    kind: ClusterPolicy
+    name: gpu-cluster-policy
+    definition:
+      spec:
+        dcgmExporter:
+          config:
+            name: "console-plugin-nvidia-gpu"
