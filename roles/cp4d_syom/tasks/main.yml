@@ -3,11 +3,11 @@
 # google/flan-t5-base'
 
 - set_fact:
-    configmap_name: "{{ syom_model_name | replace('/','-')  }}"
-    model_name: "{{ syom_model_name | replace('/','_') | replace('-','_') }}"
-    label: "{{ syom_model_name.split('/')[1] }}"
-    provider: "{{ syom_model_name.split('/')[0] }}"
-    dir_name: "{{ syom_model_name | replace('/','--') }}"
+    configmap_name: "{{ syom_model_name | replace('/','-') | lower }}"
+    model_name: "{{ syom_model_name | replace('/','_') | replace('-','_') | lower }}"
+    label: "{{ syom_model_name.split('/')[1] | lower }}"
+    provider: "{{ syom_model_name.split('/')[0] | lower }}"
+    dir_name: "{{ syom_model_name | replace('/','--') | lower }}"
 
 - name: Get cloudpakInstanceId
   k8s_info:
