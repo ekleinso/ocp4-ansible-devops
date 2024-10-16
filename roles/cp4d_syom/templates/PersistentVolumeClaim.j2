@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "{{ configmap_name }}-pvc"
+  namespace: "{{ syom_project }}"
+spec:
+  storageClassName: "{{ syom_pvc_sc }}"
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: "{{ syom_pvc_size }}"

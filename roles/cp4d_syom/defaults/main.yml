@@ -1,0 +1,14 @@
+---
+# defaults file for gpu
+
+syom_model_name: "{{ lookup('env', 'SYOM_MODEL_NAME') | default('google/flan-t5-base', true) }}"
+syom_description: "{{ lookup('env', 'SYOM_DESCRIPTION') | default('Flan is a pretraining methods that is based on prompting. The Flan-T5 are T5 models trained on the Flan collection of datasets which include: taskmaster2, djaym7/wiki_dialog, deepmind/code_contests, lambada, gsm8k, aqua_rat, esnli, quasc and qed.', true) }}"
+syom_description_short: "{{ lookup('env', 'SYOM_DESCRIPTION_SHORT') | default('FLAN-T5 is an enhanced version of T5 that has been finetuned in a mixture of tasks.', true) }}"
+syom_source: "{{ lookup('env', 'SYOM_SOURCE') | default('Hugging Face', true) }}"
+syom_deployment_framework: "{{ lookup('env', 'SYOM_DEPLOYMENT_FRAMEWORK') | default('tgis_native', true) }}"
+syom_flash_attention: "{{ lookup('env', 'SYOM_FLASH_ATTENTION') | default('false', true) }}"
+syom_number_params: "{{ lookup('env', 'SYOM_NUMBER_PARAMS') | default('248m', true) }}"
+syom_project: "{{ lookup('env', 'SYOM_PROJECT') | default('ibm-cpd-instance', true) }}"
+syom_pvc_size: "{{ lookup('env', 'SYOM_PVC_SIZE') | default('10Gi', true) }}"
+syom_pvc_sc: "{{ lookup('env', 'SYOM_PVC_SC') | default('managed-nfs-storage', true) }}"
+syom_hf_token: "{{ lookup('env', 'SYOM_HF_TOKEN') | default('', true) }}"

@@ -13,9 +13,9 @@ stringData:
       hosts: localhost
       vars:
         users:
-        - name: "ibmce"
-          password: "Passw0rd"
-        nfs_server: "192.168.7.66"
+        - name: "zeus"
+          password: "Olympus"
+        nfs_server: "192.168.1.66"
         nfs_path: "/nas/share"
         nfs_on_master: "true"
         odf_mcg_only: "true"

@@ -1,0 +1,68 @@
+---
+# tasks file for gpu
+# google/flan-t5-base'
+
+- set_fact:
+    configmap_name: "{{ syom_model_name | replace('/','-')  }}"
+    model_name: "{{ syom_model_name | replace('/','_') | replace('-','_') }}"
+    label: "{{ syom_model_name.split('/')[1] }}"
+    provider: "{{ syom_model_name.split('/')[0] }}"
+    dir_name: "{{ syom_model_name | replace('/','--') }}"
+
+- name: Get cloudpakInstanceId
+  k8s_info:
+    api_version: v1
+    kind: ConfigMap
+    name: product-configmap
+    namespace: "{{ syom_project }}"
+  register: product_configmap
+
+- debug:
+    var: product_configmap.resources[0].data.CLOUD_PAK_INSTANCE_ID
+
+- set_fact:
+    cloudpakInstanceId: "{{ product_configmap.resources[0].data.CLOUD_PAK_INSTANCE_ID }}"
+
+- name: Get cloudpak product version
+  k8s_info:
+    api_version: watsonxaiifm.cpd.ibm.com/v1beta1
+    kind: Watsonxaiifm
+    name: watsonxaiifm-cr
+    namespace: "{{ syom_project }}"
+  register: product_version
+
+- debug:
+    var: product_version.resources[0].spec.version
+
+- set_fact:
+    product_version: "{{ product_version.resources[0].spec.version }}"
+
+- name: "Prepare SYOM {{ syom_model_name }}"
+  k8s:
+    state: present
+    definition: "{{ lookup('template', '{{ item }}') }}"
+  loop:
+    - "Secret.j2"
+    - "PersistentVolumeClaim.j2"
+    - "Job.j2"
+
+- name: Wait for SYOM install job to complete
+  k8s_info:
+    api_version: batch/v1
+    kind: Job
+    namespace: "{{ syom_project }}"
+    name: "{{ configmap_name }}-job"
+    wait: yes
+    wait_sleep: 10
+    wait_timeout: 360
+  register: job_status
+  until: job_status.resources[0].status.succeeded is defined and job_status.resources[0].status.succeeded == 1
+  retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
+  delay: 30
+
+- name: "Install SYOM {{ syom_model_name }}"
+  k8s:
+    state: present
+    definition: "{{ lookup('template', '{{ item }}') }}"
+  loop:
+    - "ConfigMap.j2"

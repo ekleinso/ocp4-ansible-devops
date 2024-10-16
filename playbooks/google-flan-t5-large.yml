@@ -1,0 +1,20 @@
+---
+- name: bloom-bigscience
+  gather_facts: no
+  hosts: localhost
+  vars:
+    syom_hf_token: "<your hugging face token>"
+    syom_model_name: "google/flan-t5-large"
+    syom_description: "Flan is a pretraining methods that is based on prompting. The Flan-T5 are T5 models trained on the Flan collection of datasets which include: taskmaster2, djaym7/wiki_dialog, deepmind/code_contests, lambada, gsm8k, aqua_rat, esnli, quasc and qed."
+    syom_description_short: "FLAN-T5 is an enhanced version of T5 that has been finetuned in a mixture of tasks."
+    syom_source: "Hugging Face"
+    syom_deployment_framework: "tgis_native"
+    syom_flash_attention: "false"
+    syom_number_params: "783m"
+    syom_project: "ibm-cpd-instance"
+    syom_pvc_size: "20Gi"
+    syom_pvc_sc: "managed-nfs-storage"
+
+  roles:
+    - ibmce.ocp_ansible.cp4d_syom
+

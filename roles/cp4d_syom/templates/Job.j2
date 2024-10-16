@@ -1,0 +1,39 @@
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: "{{ configmap_name }}-job"
+  namespace: "{{ syom_project }}"
+spec:
+  template:
+    spec:
+      containers:
+        - name: models-converter
+          command:
+            - /bin/sh
+            - '-c'
+          env:
+            - name: MODEL_PATH
+              value: /model
+            - name: MODEL_NAME
+              value: "{{ syom_model_name }}"
+            - name: TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: TOKEN
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: byom-model
+              mountPath: /model
+          image: 'quay.io/modh/text-generation-inference:rhoai-2.8-58cac74'
+          args:
+            - |
+              huggingface-cli login --token ${TOKEN}
+              huggingface-cli download ${MODEL_NAME} --local-dir ${MODEL_PATH} --cache-dir ${MODEL_PATH}
+              text-generation-server convert-to-safetensors ${MODEL_PATH}
+              text-generation-server convert-to-fast-tokenizer ${MODEL_PATH}
+      restartPolicy: Never
+      volumes:
+        - name: byom-model
+          persistentVolumeClaim:
+            claimName: "{{ configmap_name }}-pvc"

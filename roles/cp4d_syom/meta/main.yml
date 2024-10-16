@@ -1,6 +1,6 @@
 galaxy_info:
   author: Eric Kleinsorgen
-  description: Install and Configure NVIDIA GPU
+  description: Ship your own model
   company: IBM
 
   license: EPL-2.0
@@ -19,7 +19,7 @@ galaxy_info:
     - ibmce
     - ansible
     - ocp
-    - gpu
+    - cp4d_syom
 
 dependencies: []
   # List your role dependencies here, one per line. Be sure to remove the '[]' above,
