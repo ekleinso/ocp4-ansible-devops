@@ -76,7 +76,7 @@ data:
           persistentVolumeClaim:
             claimName: fmaas-caikit-inf-prompt-tunes-prompt-cache
       wx_inference_proxy:
-        {{ syom_model_name }}:
+        {{ syom_model_name | lower }}:
           enabled:
           - "true"
           label: "{{ label }}"
