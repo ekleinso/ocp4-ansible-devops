@@ -1,3 +1,18 @@
+# wget https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz
+# tar zxf helm-v3.16.2-linux-amd64.tar.gz
+# mv linux-amd64/helm /usr/local/bin
+- name: Install helm if not exists
+  unarchive:
+    src: https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz
+    dest: /usr/local/bin
+    extra_opts: "--strip-components=1"
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: true
+  args:
+    creates: /usr/local/bin/helm
+
 - name: Apply NVIDIA dcgm exporter dashboard
   k8s:
     state: present
