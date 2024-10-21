@@ -1,5 +1,5 @@
 ---
 # defaults file for ocs-local-volume
 
-default_storageclass: "local-storage-volumes"
+local_storageclass: "local-storage-volumes"
 storage_nodes: "{{ lookup('env', 'STORAGE_NODES') | default('', true) }}"

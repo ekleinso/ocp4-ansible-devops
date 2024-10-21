@@ -13,9 +13,10 @@ spec:
     nodeSelectorTerms:
       - matchExpressions:
           - key: workload
-            operator: Equal
-            value: 'storage'
-  storageClassName: "{{ default_storageclass }}"
+            operator: In
+            values: 
+              - storage
+  storageClassName: "{{ local_storageclass }}"
   tolerations:
     - effect: NoSchedule
       key: node.ocs.openshift.io/storage
