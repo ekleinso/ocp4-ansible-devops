@@ -8,8 +8,9 @@ spec:
     nodeSelectorTerms:
       - matchExpressions:
           - key: workload
-            operator: Equal
-            value: 'storage'
+            operator: In
+            values:
+              - storage
   tolerations:
     - effect: NoSchedule
       key: node.ocs.openshift.io/storage

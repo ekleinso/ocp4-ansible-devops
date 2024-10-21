@@ -5,10 +5,10 @@
   vars:
     syom_hf_token: "<your hugging face token>"
     syom_model_name: "bigscience/mt0-base"
-    syom_description: "The BLOOM model has been proposed with its various versions through the BigScience Workshop. BigScience is inspired by other open science initiatives where researchers have pooled their time and resources to collectively achieve a higher impact. The architecture of BLOOM is essentially similar to GPT3 (auto-regressive model for next token prediction), but has been trained on 46 different languages and 13 programming languages. Several smaller versions of the models have been trained on the same dataset."
-    syom_description_short: "This model is being created in order to enable public research on large language models (LLMs). LLMs are intended to be used for language generation or as a pretrained base model that can be further fine-tuned for specific tasks. Use cases below are not exhaustive."
+    syom_description: "We present BLOOMZ & mT0, a family of models capable of following human instructions in dozens of languages zero-shot. We finetune BLOOM & mT5 pretrained multilingual language models on our crosslingual task mixture (xP3) and find our resulting models capable of crosslingual generalization to unseen tasks & languages."
+    syom_description_short: "BLOOMZ & mT0, a family of models capable of following human instructions in dozens of languages zero-shot. "
     syom_source: "Hugging Face"
-    syom_deployment_framework: "tgis_native"
+    syom_deployment_framework: "hf_transformers"
     syom_flash_attention: "false"
     syom_number_params: "580m"
     syom_project: "ibm-cpd-instance"

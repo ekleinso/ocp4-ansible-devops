@@ -1,18 +1,18 @@
 ---
-- name: bigscience-mt0-small
+- name: bigscience-mt0-large
   gather_facts: no
   hosts: localhost
   vars:
     syom_hf_token: "<your hugging face token>"
-    syom_model_name: "bigscience/mt0-small"
+    syom_model_name: "bigscience/mt0-large"
     syom_description: "We present BLOOMZ & mT0, a family of models capable of following human instructions in dozens of languages zero-shot. We finetune BLOOM & mT5 pretrained multilingual language models on our crosslingual task mixture (xP3) and find our resulting models capable of crosslingual generalization to unseen tasks & languages."
     syom_description_short: "BLOOMZ & mT0, a family of models capable of following human instructions in dozens of languages zero-shot. "
     syom_source: "Hugging Face"
     syom_deployment_framework: "hf_transformers"
     syom_flash_attention: "false"
-    syom_number_params: "300m"
+    syom_number_params: "1.2B"
     syom_project: "ibm-cpd-instance"
-    syom_pvc_size: "20Gi"
+    syom_pvc_size: "30Gi"
     syom_pvc_sc: "managed-nfs-storage"
 
   roles:
