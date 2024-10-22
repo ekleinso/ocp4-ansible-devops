@@ -7,10 +7,8 @@ spec:
   nodeSelector:
     nodeSelectorTerms:
       - matchExpressions:
-          - key: workload
-            operator: In
-            values:
-              - storage
+          - key: cluster.ocs.openshift.io/openshift-storage
+            operator: Exists
   tolerations:
     - effect: NoSchedule
       key: node.ocs.openshift.io/storage

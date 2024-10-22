@@ -12,10 +12,8 @@ spec:
   nodeSelector:
     nodeSelectorTerms:
       - matchExpressions:
-          - key: workload
-            operator: In
-            values: 
-              - storage
+          - key: cluster.ocs.openshift.io/openshift-storage
+            operator: Exists
   storageClassName: "{{ local_storageclass }}"
   tolerations:
     - effect: NoSchedule

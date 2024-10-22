@@ -13,7 +13,6 @@
         name: "{{ item.metadata.name }}"
         labels:
           node-role.kubernetes.io/storage: ""
-          workload: "storage"
           cluster.ocs.openshift.io/openshift-storage: ""
       spec:
         taints:
@@ -23,7 +22,7 @@
   when:
     - item.metadata.name is search("storage")
     - item["metadata"]["labels"]["node-role.kubernetes.io/storage"] is not defined or
-      item["metadata"]["labels"]["workload"] is not defined or
+      item["metadata"]["labels"]["cluster.ocs.openshift.io/openshift-storage"] is not defined or
       item["spec"]["taints"] is not defined
   loop_control:
     label: "{{ item.metadata.name }}"
