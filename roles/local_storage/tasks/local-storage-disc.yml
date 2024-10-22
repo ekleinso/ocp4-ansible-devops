@@ -14,6 +14,7 @@
         labels:
           node-role.kubernetes.io/storage: ""
           workload: "storage"
+          cluster.ocs.openshift.io/openshift-storage: ""
       spec:
         taints:
         - effect: "NoSchedule"
