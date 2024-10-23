@@ -1,3 +1,26 @@
+- name: Gather all the MCG Nodes
+  k8s_info:
+    kind: Node
+    label_selectors:
+      - "node-role.kubernetes.io/worker"
+  register: mcg_nodes
+
+- name: Add storage label to MCG nodes
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Node
+      metadata:
+        name: "{{ item.metadata.name }}"
+        labels:
+          cluster.ocs.openshift.io/openshift-storage: ""
+  when:
+    - item["metadata"]["labels"]["cluster.ocs.openshift.io/openshift-storage"] is not defined and
+      item["spec"]["taints"] is not defined
+  loop_control:
+    label: "{{ item.metadata.name }}"
+  loop: "{{ mcg_nodes.resources }}"
 
 - name: Create the StorageCluster object
   k8s:

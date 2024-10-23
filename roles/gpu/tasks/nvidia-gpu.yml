@@ -23,6 +23,13 @@
   retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
   delay: 30
 
+- name: Apply NVIDIA dcgm exporter dashboard
+  k8s:
+    state: present
+    definition: "{{ lookup('file', '{{ item }}') | from_yaml }}"
+  loop:
+    - "nvidia-dcgm-exporter-dashboard.yaml"
+
 - name: Deploy ClusterPolicy 
   k8s:
     state: present

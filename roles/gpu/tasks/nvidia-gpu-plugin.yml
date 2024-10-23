@@ -10,13 +10,6 @@
   args:
     creates: /usr/local/bin/helm
 
-- name: Apply NVIDIA dcgm exporter dashboard
-  k8s:
-    state: present
-    definition: "{{ lookup('file', '{{ item }}') | from_yaml }}"
-  loop:
-    - "nvidia-dcgm-exporter-dashboard.yaml"
-
 - name: Add rh-ecosystem-edge table chart repo
   kubernetes.core.helm_repository:
     name: rh-ecosystem-edge
@@ -39,14 +32,3 @@
         path: /spec/plugins/-
         value: "console-plugin-nvidia-gpu"
 
-- name: Add DCGM Exporter metrics ConfigMap to ClusterPolicy
-  kubernetes.core.k8s:
-    state: patched
-    api_version: nvidia.com/v1
-    kind: ClusterPolicy
-    name: gpu-cluster-policy
-    definition:
-      spec:
-        dcgmExporter:
-          config:
-            name: "console-plugin-nvidia-gpu"

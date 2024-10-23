@@ -8,6 +8,7 @@
       - "node-role.kubernetes.io/infra"
   register: ocp_infra_nodes
 
+# todo remove k8sPrometheusAdapter from template for OCP 4.16
 - name: Create ConfigMap for openshift-monitoring move to infra nodes
   k8s:
     state: present
