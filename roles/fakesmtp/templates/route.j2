@@ -1,0 +1,17 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: webgui
+  namespace: "{{ fakesmtp_name }}"
+  labels:
+    app: "{{ fakesmtp_name }}"
+spec:
+  to:
+    kind: Service
+    name: mail-svc
+    weight: 100
+  port:
+    targetPort: 80-http
+  tls:
+    termination: edge
+  wildcardPolicy: None

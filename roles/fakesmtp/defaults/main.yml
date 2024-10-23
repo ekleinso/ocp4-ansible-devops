@@ -1,0 +1,6 @@
+---
+# defaults file for gpu
+
+fakesmtp_image: "{{ lookup('env', 'FAKESMTP_IMAGE') | default('haravich/fake-smtp-server:latest', true) }}"
+fakesmtp_alertmanager: "{{ lookup('env', 'FAKESMTP_ALERTMANAGER') | default('true', true) }}"
+fakesmtp_name: "{{ lookup('env', 'FAKESMTP_NAME) | default('mailcatcher', true) }}"

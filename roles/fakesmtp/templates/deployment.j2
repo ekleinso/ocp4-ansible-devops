@@ -1,0 +1,53 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: "{{ fakesmtp_name }}"
+  namespace: "{{ fakesmtp_name }}"
+  labels:
+    app: "{{ fakesmtp_name }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ fakesmtp_name }}"
+  template:
+    restartPolicy: Always
+    metadata:
+      labels:
+        app: "{{ fakesmtp_name }}"
+        deployment: "{{ fakesmtp_name }}"
+    spec:
+      serviceAccount: default
+      containers:
+      - name: "{{ fakesmtp_name }}"
+        imagePullPolicy: IfNotPresent
+        image: "{{ fakesmtp_image }}"
+        command: ["mailcatcher", "--foreground"]
+        args:
+          - "--ip"
+          - "0.0.0.0"
+          - "--messages-limit"
+          - "25"
+          - "--no-quit"
+        resources:
+          limits:
+            memory: 512Mi
+        ports:
+          - containerPort: 1080
+            protocol: TCP
+          - containerPort: 1025
+            protocol: TCP
+        livenessProbe:
+          initialDelaySeconds: 5
+          tcpSocket:
+            port: 1025
+          timeoutSeconds: 1
+        readinessProbe:
+          exec:
+            command:
+            - /usr/bin/pgrep
+            - -f
+            - mailcatcher
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+      restartPolicy: Always

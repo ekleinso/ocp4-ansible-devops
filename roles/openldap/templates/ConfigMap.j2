@@ -1,0 +1,135 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: "{{ configmap_name }}"
+  namespace: "{{ syom_project }}"
+  labels:
+    syom: watsonxaiifm_extra_models_config
+data:
+  model: |
+    {{ model_name }}:
+      pvc_name: {{ configmap_name }}-pvc
+      pvc_size: {{ syom_pvc_size }}
+      isvc_yaml_name: isvc.yaml.j2
+      dir_name: models--{{ dir_name }}
+      force_apply: no
+      command: ["text-generation-launcher"]
+      serving_runtime: tgis-serving-runtime
+      storage_uri: pvc://{{ configmap_name }}-pvc/
+      env:
+        - name: MODEL_NAME
+          value: /mnt/models
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0" 
+        - name: TRANSFORMERS_CACHE
+          value: /mnt/models/
+        - name: HUGGINGFACE_HUB_CACHE
+          value:  /mnt/models/
+        - name: DTYPE_STR
+          value: "float16"
+        - name: MAX_SEQUENCE_LENGTH
+          value: "2048"
+        - name: MAX_BATCH_SIZE
+          value: "256"
+        - name: MAX_CONCURRENT_REQUESTS
+          value: "1024"
+        - name: MAX_NEW_TOKENS
+          value: "2048"
+        - name: FLASH_ATTENTION
+          value: "{{ syom_flash_attention }}"
+        - name: DEPLOYMENT_FRAMEWORK
+          value: "{{ syom_deployment_framework }}"
+        - name: HF_MODULES_CACHE
+          value: /tmp/huggingface/modules
+      annotations:
+        cloudpakId: 5e4c7dd451f14946bc298e18851f3746
+        cloudpakName: IBM watsonx.ai
+        productChargedContainers: All
+        productCloudpakRatio: "1:1"
+        productID: 3a6d4448ec8342279494bc22e36bc318
+        productMetric: VIRTUAL_PROCESSOR_CORE
+        productName: IBM Watsonx.ai
+        productVersion: {{ product_version }}
+        cloudpakInstanceId: {{ cloudpakInstanceId }}
+      labels_syom:
+        app.kubernetes.io/managed-by: ibm-cpd-watsonx-ai-ifm-operator
+        app.kubernetes.io/instance: watsonxaiifm
+        app.kubernetes.io/name: watsonxaiifm
+        icpdsupport/addOnId: watsonx_ai_ifm
+        icpdsupport/app: api
+        release: watsonxaiifm
+        icpdsupport/module: {{ configmap_name }}
+        app: text-{{ configmap_name }}
+        component: fmaas-inference-server
+        bam-placement: colocate
+        syom_model: {{ configmap_name }}
+      args:
+        - "--port=3000"
+        - "--grpc-port=8033"
+        - "--num-shard=1" 
+      volumeMounts:
+        - mountPath: /opt/caikit/prompt_cache
+          name: prompt-cache-dir
+          subPath: prompt_cache
+      volumes:
+        - name: prompt-cache-dir
+          persistentVolumeClaim:
+            claimName: fmaas-caikit-inf-prompt-tunes-prompt-cache
+      wx_inference_proxy:
+        {{ syom_model_name | lower }}:
+          enabled:
+          - "true"
+          label: "{{ label }}"
+          provider: "{{ provider }}"
+          source: "{{ syom_source }}"
+          functions:
+          - text_generation
+          tags:
+          - consumer_public
+          short_description: "{{ syom_description_short }}"
+          long_description: "{{ syom_description }}"
+          task_ids:
+          - question_answering
+          - generation
+          - summarization
+          - classification
+          - extraction
+          tasks_info:
+            question_answering:
+              task_ratings:
+                quality: 0
+                cost: 0
+            generation:
+              task_ratings:
+                quality: 0
+                cost: 0
+            summarization:
+              task_ratings:
+                quality: 0
+                cost: 0
+            classification:
+              task_ratings:
+                quality: 0
+                cost: 0
+            extraction:
+              task_ratings:
+                quality: 0
+                cost: 0
+          min_shot_size: 1
+          tier: "class_2"
+          number_params: "{{ syom_number_params }}"
+          lifecycle:
+            available:
+              since_version: "{{ product_version }}"
+    {{ model_name }}_resources:
+      limits:
+        cpu: "2"
+        memory: 32Gi
+        nvidia.com/gpu: "1"
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: "1"
+        memory: 4Gi
+        nvidia.com/gpu: "1"
+        ephemeral-storage: 10Mi
+    {{ model_name }}_replicas: 1
