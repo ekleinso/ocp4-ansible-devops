@@ -8,7 +8,6 @@ data:
     version: v1
     sharing:
       timeSlicing:
-        renameByDefault: false
         resources:
           - name: nvidia.com/gpu
             replicas: 8
@@ -16,7 +15,6 @@ data:
     version: v1
     sharing:
       timeSlicing:
-        renameByDefault: false
         resources:
           - name: nvidia.com/gpu
             replicas: 4
@@ -24,7 +22,6 @@ data:
     version: v1
     sharing:
       timeSlicing:
-        renameByDefault: false
         resources:
           - name: nvidia.com/gpu
             replicas: 2

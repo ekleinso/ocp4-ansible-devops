@@ -3,3 +3,5 @@
 
 gpu_timeslicing_enable: "{{ lookup('env', 'GPU_TIMESLICING_ENABLE') | default('false', true) }}"
 gpu_timeslicing_config: "{{ lookup('env', 'GPU_TIMESLICING_CONFIG') | default('Nvidia-8', true) }}"
+gpu_channel: "{{ lookup('env', 'GPU_CHANNEL') | default('stable', true) }}"
+gpu_nfd_channel: "{{ lookup('env', 'GPU_NFD_CHANNEL') | default('stable', true) }}"
