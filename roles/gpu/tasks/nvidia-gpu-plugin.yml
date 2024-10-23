@@ -22,6 +22,18 @@
     release_namespace: nvidia-gpu-operator
     update_repo_cache: true
 
+- name: Add DCGM Exporter metrics ConfigMap to ClusterPolicy
+  kubernetes.core.k8s:
+    state: patched
+    api_version: nvidia.com/v1
+    kind: ClusterPolicy
+    name: gpu-cluster-policy
+    definition:
+      spec:
+        dcgmExporter:
+          config:
+            name: "console-plugin-nvidia-gpu"
+
 - name: Enable the NVIDIA console plugin
   kubernetes.core.k8s_json_patch:
     api_version: operator.openshift.io/v1
