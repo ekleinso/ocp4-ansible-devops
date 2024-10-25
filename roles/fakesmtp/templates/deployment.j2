@@ -17,37 +17,37 @@ spec:
         app: "{{ fakesmtp_name }}"
         deployment: "{{ fakesmtp_name }}"
     spec:
+      restartPolicy: Always
       serviceAccount: default
       containers:
-      - name: "{{ fakesmtp_name }}"
-        imagePullPolicy: IfNotPresent
-        image: "{{ fakesmtp_image }}"
-        command: ["mailcatcher", "--foreground"]
-        args:
-          - "--ip"
-          - "0.0.0.0"
-          - "--messages-limit"
-          - "25"
-          - "--no-quit"
-        resources:
-          limits:
-            memory: 512Mi
-        ports:
-          - containerPort: 1080
-            protocol: TCP
-          - containerPort: 1025
-            protocol: TCP
-        livenessProbe:
-          initialDelaySeconds: 5
-          tcpSocket:
-            port: 1025
-          timeoutSeconds: 1
-        readinessProbe:
-          exec:
-            command:
-            - /usr/bin/pgrep
-            - -f
-            - mailcatcher
-          initialDelaySeconds: 5
-          timeoutSeconds: 1
-      restartPolicy: Always
+        - name: "{{ fakesmtp_name }}"
+          imagePullPolicy: IfNotPresent
+          image: "{{ fakesmtp_image }}"
+          command: ["mailcatcher", "--foreground"]
+          args:
+            - "--ip"
+            - "0.0.0.0"
+            - "--messages-limit"
+            - "25"
+            - "--no-quit"
+          resources:
+            limits:
+              memory: 512Mi
+          ports:
+            - containerPort: 1080
+              protocol: TCP
+            - containerPort: 1025
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 5
+            tcpSocket:
+              port: 1025
+            timeoutSeconds: 1
+          readinessProbe:
+            exec:
+              command:
+              - /usr/bin/pgrep
+              - -f
+              - mailcatcher
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
