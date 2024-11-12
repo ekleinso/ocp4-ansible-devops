@@ -11,7 +11,6 @@ spec:
     matchLabels:
       app: "{{ fakesmtp_name }}"
   template:
-    restartPolicy: Always
     metadata:
       labels:
         app: "{{ fakesmtp_name }}"
