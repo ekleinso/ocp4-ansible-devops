@@ -32,7 +32,7 @@ spec:
       managementState: Removed
     workbenches:
       managementState: Removed
-{% if rhodsc_channel is defined and rhodsc_channel == "embedded" %}
+{% if rhodsc_channel is defined and rhodsc_channel != "eus-2.8" %}
     trainingoperator:
       managementState: Managed 
     trustyai:

@@ -1,0 +1,6 @@
+---
+# defaults file for openshift serverless
+serverless_namespace: "{{ lookup('env', 'SERVERLESS_NAMESPACE') | default('openshift-serverless', true) }}"
+serverless_channel: "{{ lookup('env', 'SERVERLESS_CHANNEL') | default('stable-1.33', true) }}"
+serverless_name: "{{ lookup('env', 'SERVERLESS_NAME') | default('serverless-operator', true) }}"
+serverless_source: "{{ lookup('env', 'SERVERLESS_SOURCE') | default('redhat-operators', true) }}"

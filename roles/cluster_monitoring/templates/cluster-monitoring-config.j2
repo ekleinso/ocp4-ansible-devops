@@ -56,12 +56,6 @@ data:
         node-role.kubernetes.io/infra: ""
       tolerations:
       - key: node-role.kubernetes.io/infra
-    k8sPrometheusAdapter:
-      nodeSelector:
-        node-role.kubernetes.io/infra: ""
-      tolerations:
-      - key: node-role.kubernetes.io/infra
-        operator: Exists
     openshiftStateMetrics:
       nodeSelector:
         node-role.kubernetes.io/infra: ""

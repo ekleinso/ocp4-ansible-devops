@@ -1,0 +1,10 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: "{{ serverless_name }}"
+  namespace: "{{ serverless_namespace }}"
+spec:
+  channel: "{{ serverless_channel }}"
+  name: "{{ serverless_name }}" 
+  source: "{{ serverless_source }}" 
+  sourceNamespace: openshift-marketplace

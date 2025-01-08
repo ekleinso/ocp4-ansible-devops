@@ -1,0 +1,24 @@
+- name: Prepare Red Hat OpenShift Certificate Manager Operator environment
+  k8s:
+    state: present
+    definition: "{{ lookup('template', '{{ item }}') }}"
+  loop:
+    - "namespace.j2"
+    - "operatorgroup.j2"
+    - "subscription.j2"
+
+- name: Wait for Red Hat OpenShift Certificate Manager Operator to be installed
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    namespace: "{{ certmgr_namespace }}"
+    label_selectors:
+      - "operators.coreos.com/{{ certmgr_name }}.{{ certmgr_namespace }}"
+    wait: yes
+    wait_sleep: 10
+    wait_timeout: 360
+  register: reg_csv_status
+  until: 
+    - reg_csv_status.resources[0].status.phase == "Succeeded" 
+  retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
+  delay: 30

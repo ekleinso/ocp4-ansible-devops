@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: "{{ certmgr_name }}"
+  namespace: "{{ certmgr_namespace }}"
+spec:
+  channel: "{{ certmgr_channel }}"
+  name: "{{ certmgr_name }}" 
+  source: "{{ certmgr_source }}" 
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic

@@ -1,0 +1,9 @@
+---
+
+- name: Gather all the Pods with error state
+  shell: "oc get pods -A | grep Error | awk '{print $1\" \"$2}'"
+  register: error_pods
+
+- name: Display Pod Result
+  shell: "oc delete pod -n {{ item }}"
+  loop: "{{ error_pods.stdout_lines }}"
