@@ -1,0 +1,24 @@
+---
+- name: Configure Cluster
+  gather_facts: no
+  hosts: localhost
+  vars:
+    users:
+    - name: "{{ lookup('env', 'OCP_ADMIN') | default('zeus', true) }}"
+      password: "{{ lookup('env', 'OCP_ADMIN_PASSWORD') | default('MountOlympu$', true) }}"
+
+  roles:
+    - admin_acks
+    - catalog_source
+    - htpasswd
+    - certificates
+    - scheduler_config
+    - managed_nfs_storage
+    - odf_storage
+    - image_registry
+    - cluster_monitoring
+    - gpu
+    - rhodsc
+    - fakesmtp
+    - pod_cleanup
+    - ocp_certmgr

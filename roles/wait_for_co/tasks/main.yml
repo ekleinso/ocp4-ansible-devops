@@ -1,0 +1,24 @@
+---
+- name: Gather all the Cluster Operators
+  k8s_info:
+    api_version: config.openshift.io/v1
+    kind: ClusterOperator
+  register: ocp_operators
+
+- set_fact:
+    operators: "{{ operators | default([]) | union([item.metadata.name]) }}"
+  loop: "{{ ocp_operators.resources }}"
+  no_log: True
+
+- name: Wait for cluster operators to be Available
+  k8s_info:
+    api_version: config.openshift.io/v1
+    kind: ClusterOperator
+    name: "{{ item }}"
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 600
+    wait_condition:
+      type: Available
+      status: "True"
+  loop: "{{ operators }}"

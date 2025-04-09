@@ -1,6 +1,6 @@
 ---
 # defaults file for openshift serverless
 certmgr_namespace: "{{ lookup('env', 'CERTMGR_NAMESPACE') | default('cert-manager-operator', true) }}"
-certmgr_channel: "{{ lookup('env', 'CERTMGR_CHANNEL') | default('stable-v1', true) }}"
+certmgr_channel: "{{ lookup('env', 'CERTMGR_CHANNEL') | default('stable-v1.14', true) }}"
 certmgr_name: "{{ lookup('env', 'CERTMGR_NAME') | default('openshift-cert-manager-operator', true) }}"
 certmgr_source: "{{ lookup('env', 'CERTMGR_SOURCE') | default('redhat-operators', true) }}"
