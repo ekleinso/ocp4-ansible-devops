@@ -1,0 +1,12 @@
+build:
+  image: $CI_REGISTRY/docker/docker:20.10.16
+  services:
+    - name: $CI_REGISTRY/docker/docker:20.10.16-dind
+      alias: docker
+  stage: build
+  before_script:
+    - mkdir -p $HOME/.docker
+    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+  script:
+    - docker build -t $CI_REGISTRY/docker/ocp4-ansible-devops:latest .
+    - docker push $CI_REGISTRY/docker/ocp4-ansible-devops:latest
