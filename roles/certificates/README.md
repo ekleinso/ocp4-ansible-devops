@@ -24,7 +24,7 @@ ingress_key: "{{ lookup('env', 'INGRESS_KEY') | default('', true) }}"
 Example invocation of the role in a playbook
 ```yaml
 ---
-- name: ocpxe - kdc
+- name: Cluster config
   gather_facts: no
   hosts: localhost
   vars:

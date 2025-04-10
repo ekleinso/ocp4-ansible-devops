@@ -1,7 +1,7 @@
 ---
 
 - name: Gather all the Pods with error state
-  shell: "oc get pods -A | grep -E "iptables-alerter|dns-default|Error" | awk '{print $1\" \"$2}'"
+  shell: "oc get pods -A | grep -E \"iptables-alerter|dns-default|Error\" | awk '{print $1\" \"$2}'"
   register: error_pods
 
 - name: Delete Pods with error state
