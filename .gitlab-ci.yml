@@ -19,4 +19,4 @@ podman-build:
     # other Docker registry though by changing the login and
     # image name.
     - podman build -t "$CI_REGISTRY/docker/ocp4-ansible-devops:latest" .
-    - podman push "$CI_REGISTRY/docker/ocp4-ansible-devops:latest"
+    - podman push "$CI_REGISTRY/docker/ocp4-ansible-devops:latest" --tls-verify=false
