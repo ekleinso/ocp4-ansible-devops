@@ -1,0 +1,15 @@
+---
+- name: Read a vault secret
+  ansible.builtin.set_fact:
+    openshift: "{{ lookup('community.hashi_vault.vault_kv2_get', 'openshift', engine_mount_point='kv') }}"
+
+- set_fact:
+    users: "{{ openshift.secret.users }}"
+    root_ca: "{{ openshift.secret['ca-certificate'] | b64encode }}"
+    ingress_certificate: "{{ openshift.secret['ocpxe-certificate'] | b64encode }}"
+    ingress_key: "{{ openshift.secret['ocpxe-key'] | b64encode }}"
+    nfs: "{{ openshift.secret.nfs }}"
+
+- set_fact:
+    nfs_server: "{{ nfs.server }}"
+    nfs_path: "{{ nfs.path }}"

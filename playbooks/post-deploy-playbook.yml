@@ -8,6 +8,7 @@
       password: "{{ lookup('env', 'OCP_ADMIN_PASSWORD') | default('MountOlympu$', true) }}"
 
   roles:
+    - vault
     - admin_acks
     - catalog_source
     - htpasswd

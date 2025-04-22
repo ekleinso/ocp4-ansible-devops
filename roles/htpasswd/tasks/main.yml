@@ -15,6 +15,7 @@
         kind: User
         name: "{{ item.name }}"
   loop: "{{ users }}"
+  no_log: true
 
 - name: Add a users to a password file suitable for use by OpenShift
   community.general.htpasswd:
@@ -23,6 +24,7 @@
     password: "{{ item.password }}"
     hash_scheme: ldap_sha1
   loop: "{{ users }}"
+  no_log: true
 
 - name: Create htpasswd secret
   k8s:
