@@ -1,1 +1,8 @@
 ---
+# defaults file for Hashicorp vault secrets operator
+vault_namespace: "{{ lookup('env', 'VAULT_NAMESPACE') | default('vault-secrets-operator', true) }}"
+vault_channel: "{{ lookup('env', 'VAULT_CHANNEL') | default('stable', true) }}"
+vault_name: "{{ lookup('env', 'VAULT_NAME') | default('vault-secrets-operator', true) }}"
+vault_source: "{{ lookup('env', 'VAULT_SOURCE') | default('certified-operators', true) }}"
+vault_addr: "{{ lookup('env', 'VAULT_ADDR') | default('http://vault.vault.svc.cluster.local:8200', true) }}"
+vault_enabled_namespaces: "{{ lookup('env', 'VAULT_ENABLED_NAMESPACES').split(',')  | default([], true) }}"

@@ -1,0 +1,18 @@
+{% for ns in vault_enabled_namespaces %}
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: vso-auth
+  namespace: "{{ ns }}"
+spec:
+  vaultConnectionRef: default
+  method: kubernetes
+  mount: vso
+  kubernetes:
+    audiences:
+      - vault
+    role: vso-role
+    serviceAccount: vault-auth
+    tokenExpirationSeconds: 600
+{% endfor %}

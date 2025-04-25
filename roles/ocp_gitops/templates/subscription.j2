@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: "{{ gitops_name }}"
+  namespace: "{{ gitops_namespace }}"
+spec:
+  channel: "{{ gitops_channel }}"
+  name: "{{ gitops_name }}" 
+  source: "{{ gitops_source }}" 
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic

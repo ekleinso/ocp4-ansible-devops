@@ -1,0 +1,6 @@
+---
+# defaults file for openshift serverless
+gitops_namespace: "{{ lookup('env', 'GITOPS_NAMESPACE') | default('openshift-gitops-operator', true) }}"
+gitops_channel: "{{ lookup('env', 'GITOPS_CHANNEL') | default('latest', true) }}"
+gitops_name: "{{ lookup('env', 'GITOPS_NAME') | default('openshift-gitops-operator', true) }}"
+gitops_source: "{{ lookup('env', 'GITOPS_SOURCE') | default('redhat-operators', true) }}"

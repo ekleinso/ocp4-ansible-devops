@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: "{{ vault_name }}"
+  namespace: "{{ vault_namespace }}"
+spec:
+  channel: "{{ vault_channel }}"
+  name: "{{ vault_name }}"
+  source: "{{ vault_source }}" 
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic

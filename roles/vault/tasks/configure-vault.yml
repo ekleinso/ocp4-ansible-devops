@@ -1,0 +1,20 @@
+---
+- name: Create vault CA certificate Secret
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: kubernetes.io/tls
+      metadata:
+        name: vault-ca-cert
+        namespace: "{{ vault_namespace }}"
+      data: 
+        ca.crt: "{{ root_ca }}"
+  when: root_ca
+
+- name: Create vault connection
+  k8s:
+    state: present
+    definition: "{{ lookup('template', '{{ item }}') }}"
+  loop:
+    - "vaultconnection.j2"
