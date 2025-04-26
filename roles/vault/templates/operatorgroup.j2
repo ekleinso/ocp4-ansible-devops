@@ -4,5 +4,4 @@ metadata:
   name: "{{ vault_name }}"
   namespace: "{{ vault_namespace }}"
 spec:
-  targetNamespaces:
-  - "{{ vault_namespace }}"
+  upgradeStrategy: Default
