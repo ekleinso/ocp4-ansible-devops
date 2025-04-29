@@ -19,6 +19,6 @@
     wait_timeout: 360
   register: reg_csv_status
   until: 
-    - reg_csv_status.resources[0].status.phase == "Succeeded" 
+    - reg_csv_status.resources[0].status.phase is defined and reg_csv_status.resources[0].status.phase == "Succeeded" 
   retries: 20 # wait for 10 minutes (20 retries x 30 sec = 600 sec)
   delay: 30
